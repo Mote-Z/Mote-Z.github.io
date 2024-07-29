@@ -4,26 +4,58 @@
 <meta charset="utf-8">
 <title>Mote-Z</title>
 <style>
+:root{
+	--head-title-h2-background: linear-gradient(to right, #f7ce68, #fbabfe);
+	--element-color: #FB9500; /* 元素主色 */
+}
 body { 
-margin: 0; 
+	margin-bottom: 0px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0px;
+    width: 940px;
 }
 #menu{
-font-size: 24px;
-font-weight: bold;
+	font-size: 24px;
+	font-weight: bold;
+	word-wrap: break-word;
 }
 #menu ul li{
-text-decoration: none;
-list-style: none;
-display: inline;
-padding: 0px 10px 0px 10px;
+	text-decoration: none;
+	list-style: none;
+	display: inline;
+	padding: 4px 15px 4px 15px;
+	width: fit-content;
+	font-weight: bold;
+	margin: 20px 0;
+	border-radius: 10px;
+	background: var(--head-title-h2-background);
+	background-size: 200% 100%;
+	background-position: 0% 0%;
+	transition: all ease-in-out 0.1s;
 }
 #menu ul li a{
-text-decoration: none;
-text-align: center;
+	text-decoration: none;
+	text-align: center;
 }
 #menu ul li a:hover{
-background-position: -100% -100%;
-transition: all ease-in-out 0.1s;
+	background-position: -100% -100%;
+	transition: all ease-in-out 0.1s;
+}
+
+/* reference: https://github.com/sumruler/typora-theme-phycat*/
+#myquote blockquote {
+	margin-left: 12px;
+	padding: 12px;
+	border: 1px solid var(--element-color);
+	border-left-color: var(--element-color);
+	border-left-width: 4px;
+	border-radius: 4px;
+	line-height: 26px;
+}
+
+#myquote blockquote p {
+  color: #000;
 }
 </style>
 </head>
@@ -36,8 +68,9 @@ transition: all ease-in-out 0.1s;
 		<li><a href="#">Projects</a></li>
 	</ul>
 </div>
-<div>
-	Mote-Z
+<div id="myquote">
+	<blockquote>Life is full of surprises.</blockquote>
+	
 </div>
 <script type="module">
   import * as THREE from 'https://mote-z.github.io/three.module.js';
