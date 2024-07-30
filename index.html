@@ -15,12 +15,34 @@ body {
     margin-top: 0px;
     width: 940px;
 }
-#menu{
+
+#menu {
+position: absolute;
+top: 10px;
+left: 10px;
+z-index: 1;
+}
+.menu-item {
+cursor: pointer;
+padding: 5px;
+margin: 5px;
+border-radius: 10px;
+background: var(--head-title-h2-background);
+background-size: 200% 100%;
+background-position: 0% 0%;
+transition: all ease-in-out 0.1s;
+border: 1px solid #ffffff;
+}
+.menu-item:hover{
+background-position: -100% -100%;
+transition: all ease-in-out 0.1s;
+}
+#oldmenu{
 	font-size: 24px;
 	font-weight: bold;
 	word-wrap: break-word;
 }
-#menu ul li{
+#oldmenu ul li{
 	text-decoration: none;
 	list-style: none;
 	display: inline;
@@ -34,11 +56,11 @@ body {
 	background-position: 0% 0%;
 	transition: all ease-in-out 0.1s;
 }
-#menu ul li a{
+#oldmenu ul li a{
 	text-decoration: none;
 	text-align: center;
 }
-#menu ul li a:hover{
+#oldmenu ul li a:hover{
 	background-position: -100% -100%;
 	transition: all ease-in-out 0.1s;
 }
@@ -62,12 +84,10 @@ body {
 <body>
 
 <div id="menu">
-	<ul>
-		<li><a href="#">Home</a></li>
-		<li><a href="#">CTF</a></li>
-		<li><a href="#">Projects</a></li>
-	</ul>
-</div>
+    <div id="home" class="menu-item">Home</div>
+    <div id="ctf" class="menu-item">CTF</div>
+    <div id="publications" class="menu-item">Publications</div>
+  </div>
 <div id="myquote">
 	<blockquote>Life is full of surprises.</blockquote>
 	
