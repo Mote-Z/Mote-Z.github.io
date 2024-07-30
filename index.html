@@ -113,7 +113,46 @@ body {
   renderer.setSize( 500, 500 );
   renderer.setAnimationLoop( animation );
   document.body.appendChild( renderer.domElement );
-  
+
+//
+	const menu = {
+      home: document.getElementById('home'),
+      honorWall: document.getElementById('ctf'),
+      historyWall: document.getElementById('publications')
+    };
+	// 
+    const scenes = {
+      home: createScene('Home Scene'),
+      ctf: createScene('CTF'),
+      publications: createScene('Publications')
+    };
+	let currentScene = scenes.home;
+
+    function createScene(name) {
+      const geometry = new THREE.BoxGeometry( 9, 3, 3 ); 
+      const material = new THREE.MeshNormalMaterial();
+      const cube = new THREE.Mesh(geometry, material);
+      cube.name = name;
+      return cube;
+    }
+
+    scene.add(currentScene);
+
+    function switchScene(sceneName) {
+      scene.remove(currentScene);
+      currentScene = scenes[sceneName];
+      scene.add(currentScene);
+      console.log(`Switched to ${sceneName}`);
+    }
+
+    // 为菜单项添加事件监听器
+    Object.keys(menu).forEach(key => {
+      menu[key].addEventListener('click', () => {
+        switchScene(key);
+      });
+    });
+
+    camera.position.z = 5;
   // animation
   
   function animation( time ) {
