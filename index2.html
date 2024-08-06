@@ -2,19 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Three.js Node Example</title>
+    <title>Three.js Interactive Nodes</title>
     <style>
-        /* 添加CSS样式以美化界面 */
         #myIframe {
-            display: none; /* 初始时不显示iframe */
+            display: none;
+            width: 100%;
+            height: 500px;
+            border: none;
         }
         #infoCard {
-            display: none; /* 初始时不显示信息卡片 */
+            display: none;
             position: absolute;
-            background-color: white;
-            border: 1px solid black;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(255, 255, 255, 0.9);
             padding: 10px;
-            z-index: 10;
+            border: 1px solid #000;
+            z-index: 100;
         }
     </style>
 </head>
@@ -28,70 +32,89 @@
     <blockquote>Life is full of surprises.</blockquote>
 </div>
 
-<div id="infoCard"> <!-- 信息卡片容器 -->
-    <!-- 这里将动态显示文章的元数据 -->
+<div id="infoCard">
+    <!-- Info Card content will be injected here -->
 </div>
-<iframe id="myIframe" src="" style="width:100%; height:500px;">Your browser does not support iframes.</iframe> <!-- 用于显示PDF的iframe -->
+<iframe id="myIframe" src="">Your browser does not support iframes.</iframe>
 
 <script type="module">
-import * as THREE from 'https://mote-z.github.io/three.module.js'; 
+import * as THREE from 'https://mote-z.github.io/three.module.js'; // Adjust the path to your three.js library
 
-// 假设JSON数据存储在'articles.json'文件中
-fetch('./articles.json')
-  .then(response => response.json())
-  .then(data => {
-    const articles = data.articles;
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+// Initialize the scene, camera, and renderer
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
+// Raycaster for mouse interaction
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+// Function to load articles data from JSON
+function loadArticlesData(url) {
+    fetch(url)
+    .then(response => response.json())
+    .then(data => createNodes(data.articles))
+    .catch(error => console.error('Error loading JSON:', error));
+}
+
+// Function to create nodes for each article
+function createNodes(articles) {
     articles.forEach(article => {
         const geometry = new THREE.BoxGeometry(1, 1, 1);
-        const material = new THREE.MeshBasicMaterial({color: Math.random() * 0xffffff});
+        const material = new THREE.MeshPhongMaterial({color: Math.random() * 0xffffff});
         const cube = new THREE.Mesh(geometry, material);
-        cube.position.x = (Math.random() - 0.5) * 100;
-        cube.position.y = (Math.random() - 0.5) * 100;
-        cube.position.z = (Math.random() - 0.5) * 100;
         cube.userData = {link: article.link, categories: article.categories};
         scene.add(cube);
 
+        // Add interaction
         cube.on('click', () => {
             document.getElementById('myIframe').src = cube.userData.link;
             document.getElementById('myIframe').style.display = 'block';
         });
-
-        cube.on('mouseover', () => {
-            const infoCard = document.getElementById('infoCard');
-            infoCard.innerHTML = `
-                <h3>${cube.userData.categories.join(', ')}</h3>
-                <p>Link: <a href="${cube.userData.link}" target="_blank">${cube.userData.link}</a></p>
-            `;
-            infoCard.style.display = 'block';
-            infoCard.style.left = `${cube.position.x}px`;
-            infoCard.style.top = `${cube.position.y}px`;
-        });
-
-        cube.on('mouseout', () => {
-            document.getElementById('infoCard').style.display = 'none';
-        });
     });
+}
 
-    camera.position.z = 5;
-    const animate = function () {
-        requestAnimationFrame(animate);
-        scene.traverse(function (object) {
-            if (object.isMesh) {
-                object.rotation.x += 0.01;
-                object.rotation.y += 0.01;
-            }
-        });
-        renderer.render(scene, camera);
-    };
-    animate();
-  })
-  .catch(error => console.error('Error loading JSON:', error));
+// Handle mouse events
+function onMouseMove(event) {
+    event.preventDefault();
+    mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+    mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+
+    const intersects = raycaster.intersectObjects(scene.children);
+    if (intersects.length > 0) {
+        const intersectedObject = intersects[0].object;
+        if (intersectedObject.userData) {
+            document.getElementById('infoCard').style.display = 'block';
+            document.getElementById('infoCard').innerHTML = `
+                <p>${intersectedObject.userData.categories.join(', ')}</p>
+                <a href="${intersectedObject.userData.link.replace(/&quot;/g, '"')}" target="_blank">View PDF</a>
+            `;
+        }
+    } else {
+        document.getElementById('infoCard').style.display = 'none';
+    }
+}
+
+function onMouseDown(event) {
+    // The mouse click logic can be handled similarly to onMouseMove
+}
+
+// Add event listeners
+document.addEventListener('mousemove', onMouseMove, false);
+document.addEventListener('mousedown', onMouseDown, false);
+
+// Start the animation loop
+function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+}
+animate();
+
+// Load articles data
+loadArticlesData('articles.json');
 
 </script>
 </body>
