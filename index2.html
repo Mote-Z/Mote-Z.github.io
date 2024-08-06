@@ -49,6 +49,7 @@ document.body.appendChild(renderer.domElement);
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
+
 // Handle mouse move event
 function onMouseMove(event) {
     event.preventDefault();
@@ -58,6 +59,7 @@ function onMouseMove(event) {
 
     const intersects = raycaster.intersectObjects(scene.children);
     if (intersects.length > 0) {
+        console.log(intersects)
         const intersectedObject = intersects[0].object;
         intersectedObject.material.color.set(this.color16())
         if (intersectedObject.userData) {
@@ -81,7 +83,7 @@ function onMouseDown(event) {
 
 // Add event listeners
 document.addEventListener('mousemove', onMouseMove, false);
-document.addEventListener('click', onMouseDown, false);
+
 
 // Function to load articles data from JSON
 function loadArticlesData(url) {

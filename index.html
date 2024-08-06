@@ -169,6 +169,7 @@ function onMouseMove(event) {
 
     const intersects = raycaster.intersectObjects(scene.children);
     if (intersects.length > 0) {
+		console.log(intersects)
 		intersects[0].object.material.color.set(this.color16())
         const intersectedObject = intersects[0].object;
         if (intersectedObject.userData) {
