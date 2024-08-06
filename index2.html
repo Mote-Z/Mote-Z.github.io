@@ -12,9 +12,7 @@
         }
         #infoCard {
             display: none;
-            position: absolute;
-            top: 10px;
-            left: 10px;
+            position: fixed;
             background-color: rgba(255, 255, 255, 0.9);
             padding: 10px;
             border: 1px solid #000;
@@ -51,32 +49,7 @@ document.body.appendChild(renderer.domElement);
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
-// Function to load articles data from JSON
-function loadArticlesData(url) {
-    fetch(url)
-    .then(response => response.json())
-    .then(data => createNodes(data.articles))
-    .catch(error => console.error('Error loading JSON:', error));
-}
-
-// Function to create nodes for each article
-function createNodes(articles) {
-    articles.forEach(article => {
-        const geometry = new THREE.BoxGeometry(1, 1, 1);
-        const material = new THREE.MeshPhongMaterial({color: Math.random() * 0xffffff});
-        const cube = new THREE.Mesh(geometry, material);
-        cube.userData = {link: article.link, categories: article.categories};
-        scene.add(cube);
-
-        // Add interaction
-        cube.on('click', () => {
-            document.getElementById('myIframe').src = cube.userData.link;
-            document.getElementById('myIframe').style.display = 'block';
-        });
-    });
-}
-
-// Handle mouse events
+// Handle mouse move event
 function onMouseMove(event) {
     event.preventDefault();
     mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
@@ -89,8 +62,8 @@ function onMouseMove(event) {
         if (intersectedObject.userData) {
             document.getElementById('infoCard').style.display = 'block';
             document.getElementById('infoCard').innerHTML = `
-                <p>${intersectedObject.userData.categories.join(', ')}</p>
-                <a href="${intersectedObject.userData.link.replace(/&quot;/g, '"')}" target="_blank">View PDF</a>
+                <h3>${intersectedObject.userData.categories.join(', ')}</h3>
+                <p>Link: <a href="${intersectedObject.userData.link}" target="_blank">Open PDF</a></p>
             `;
         }
     } else {
@@ -98,19 +71,43 @@ function onMouseMove(event) {
     }
 }
 
+// Handle mouse click event
 function onMouseDown(event) {
-    // The mouse click logic can be handled similarly to onMouseMove
+    event.preventDefault();
+    // Repeat the raycaster setup from mouse move
+    // and check intersects to load the PDF
 }
 
 // Add event listeners
 document.addEventListener('mousemove', onMouseMove, false);
-document.addEventListener('mousedown', onMouseDown, false);
+document.addEventListener('click', onMouseDown, false);
 
-// Start the animation loop
+// Function to load articles data from JSON
+function loadArticlesData(url) {
+    fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        const articles = data.articles;
+        articles.forEach(article => {
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const material = new THREE.MeshPhongMaterial({color: Math.random() * 0xffffff});
+            const cube = new THREE.Mesh(geometry, material);
+            cube.position.x = Math.random() * 500 - 250;
+            cube.position.y = Math.random() * 500 - 250;
+            cube.userData = {link: article.link, categories: article.categories};
+            scene.add(cube);
+        });
+    })
+    .catch(error => console.error('Error loading JSON:', error));
+}
+
+// Animation loop
 function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
 }
+
+// Start the animation loop
 animate();
 
 // Load articles data
