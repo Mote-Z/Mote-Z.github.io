@@ -90,7 +90,7 @@ function loadArticlesData(url) {
         const articles = data.articles;
         articles.forEach(article => {
             const geometry = new THREE.BoxGeometry(1, 1, 1);
-            const material = new THREE.MeshPhongMaterial({color: Math.random() * 0xffffff});
+            const material = new THREE.MeshPhongMaterial();
             const cube = new THREE.Mesh(geometry, material);
             cube.position.x = Math.random() * 500 - 250;
             cube.position.y = Math.random() * 500 - 250;
@@ -111,7 +111,7 @@ function animate() {
 animate();
 
 // Load articles data
-loadArticlesData('articles.json');
+loadArticlesData('https://mote-z.github.io/articles.json');
 
 </script>
 </body>
