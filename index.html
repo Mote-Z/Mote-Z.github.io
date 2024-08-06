@@ -150,7 +150,7 @@ class Loop {
 
 // init
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
+const camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 100 );
 const renderer = new THREE.WebGLRenderer( { antialias: true } );
 const loop = new Loop(camera, scene, renderer)
 renderer.setSize( 900, 500 );
