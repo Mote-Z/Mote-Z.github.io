@@ -54,11 +54,12 @@ function onMouseMove(event) {
     event.preventDefault();
     mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
     mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
-    raycaster.setFromCamera(mouse, camera);
+    raycaster.setFromCamera(mouse, this.camera);
 
     const intersects = raycaster.intersectObjects(scene.children);
     if (intersects.length > 0) {
         const intersectedObject = intersects[0].object;
+        intersectedObject.material.color.set(this.color16())
         if (intersectedObject.userData) {
             document.getElementById('infoCard').style.display = 'block';
             document.getElementById('infoCard').innerHTML = `
