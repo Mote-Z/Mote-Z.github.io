@@ -1,0 +1,17 @@
+{
+    "articles": [
+        {
+            "link": "https://xxx.github.io/pdf/test/abc.pdf",
+            "categories": ["category_1","category_2"]
+        },{
+            "link": "https://xxx.github.io/pdf/test/abc2.pdf",
+            "categories": ["category_1","category_2"]
+        },{
+            "link": "https://xxx.github.io/pdf/test/abc2.pdf",
+            "categories": ["category_1"]
+        },{
+            "link": "https://xxx.github.io/pdf/test/abc2.pdf",
+            "categories": ["category_2"]
+        }
+    ]
+}

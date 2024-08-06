@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Three.js Node Example</title>
+    <style>
+        /* 添加CSS样式以美化界面 */
+        #myIframe {
+            display: none; /* 初始时不显示iframe */
+        }
+        #infoCard {
+            display: none; /* 初始时不显示信息卡片 */
+            position: absolute;
+            background-color: white;
+            border: 1px solid black;
+            padding: 10px;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+<div id="menu">
+    <div id="home" class="menu-item">Home</div>
+    <div id="publications" class="menu-item">Publications</div>
+</div>
+<div id="myquote">
+    <blockquote>Life is full of surprises.</blockquote>
+</div>
+
+<div id="infoCard"> <!-- 信息卡片容器 -->
+    <!-- 这里将动态显示文章的元数据 -->
+</div>
+<iframe id="myIframe" src="" style="width:100%; height:500px;">Your browser does not support iframes.</iframe> <!-- 用于显示PDF的iframe -->
+
+<script type="module">
+import * as THREE from 'https://mote-z.github.io/three.module.js'; 
+
+// 假设JSON数据存储在'articles.json'文件中
+fetch('./articles.json')
+  .then(response => response.json())
+  .then(data => {
+    const articles = data.articles;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    articles.forEach(article => {
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshBasicMaterial({color: Math.random() * 0xffffff});
+        const cube = new THREE.Mesh(geometry, material);
+        cube.position.x = (Math.random() - 0.5) * 100;
+        cube.position.y = (Math.random() - 0.5) * 100;
+        cube.position.z = (Math.random() - 0.5) * 100;
+        cube.userData = {link: article.link, categories: article.categories};
+        scene.add(cube);
+
+        cube.on('click', () => {
+            document.getElementById('myIframe').src = cube.userData.link;
+            document.getElementById('myIframe').style.display = 'block';
+        });
+
+        cube.on('mouseover', () => {
+            const infoCard = document.getElementById('infoCard');
+            infoCard.innerHTML = `
+                <h3>${cube.userData.categories.join(', ')}</h3>
+                <p>Link: <a href="${cube.userData.link}" target="_blank">${cube.userData.link}</a></p>
+            `;
+            infoCard.style.display = 'block';
+            infoCard.style.left = `${cube.position.x}px`;
+            infoCard.style.top = `${cube.position.y}px`;
+        });
+
+        cube.on('mouseout', () => {
+            document.getElementById('infoCard').style.display = 'none';
+        });
+    });
+
+    camera.position.z = 5;
+    const animate = function () {
+        requestAnimationFrame(animate);
+        scene.traverse(function (object) {
+            if (object.isMesh) {
+                object.rotation.x += 0.01;
+                object.rotation.y += 0.01;
+            }
+        });
+        renderer.render(scene, camera);
+    };
+    animate();
+  })
+  .catch(error => console.error('Error loading JSON:', error));
+
+</script>
+</body>
+</html>
