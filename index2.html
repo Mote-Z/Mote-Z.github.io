@@ -42,7 +42,7 @@ import * as THREE from 'https://mote-z.github.io/three.module.js'; // Adjust the
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize( 900, 500 );
 document.body.appendChild(renderer.domElement);
 
 // Raycaster for mouse interaction
@@ -53,9 +53,11 @@ const mouse = new THREE.Vector2();
 // Handle mouse move event
 function onMouseMove(event) {
     event.preventDefault();
-    mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
-    mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
-    raycaster.setFromCamera(mouse, this.camera);
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    console.log(event.clientX, window.innerWidth, mouse.x)
+    console.log(event.clientY, window.innerHeight, mouse.y)
+    raycaster.setFromCamera(mouse, camera);
 
     const intersects = raycaster.intersectObjects(scene.children);
     if (intersects.length > 0) {
@@ -74,15 +76,8 @@ function onMouseMove(event) {
     }
 }
 
-// Handle mouse click event
-function onMouseDown(event) {
-    event.preventDefault();
-    // Repeat the raycaster setup from mouse move
-    // and check intersects to load the PDF
-}
-
 // Add event listeners
-renderer.domElement.addEventListener('mousemove', onMouseMove, false);
+window.addEventListener('mousemove', onMouseMove, false);
 
 
 // Function to load articles data from JSON
@@ -92,11 +87,10 @@ function loadArticlesData(url) {
     .then(data => {
         const articles = data.articles;
         articles.forEach(article => {
+            console.log(article)
             const geometry = new THREE.BoxGeometry(1, 1, 1);
             const material = new THREE.MeshPhongMaterial();
             const cube = new THREE.Mesh(geometry, material);
-            cube.position.x = Math.random() * 500 - 250;
-            cube.position.y = Math.random() * 500 - 250;
             cube.userData = {link: article.link, categories: article.categories};
             scene.add(cube);
         });
