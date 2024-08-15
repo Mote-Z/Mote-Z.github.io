@@ -1,6 +1,28 @@
 
 import * as THREE from 'https://mote-z.github.io/js/three.module.js';
 
+// 假设这是你的JSON数据的URL
+const jsonUrl = 'https://mote-z.github.io/json/articles.json';
+
+// 使用fetch API从URL获取JSON数据
+fetch(jsonUrl)
+  .then(response => {
+    // 确保响应是成功的
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json(); // 解析JSON数据
+  })
+  .then(data => {
+    // 使用获取到的数据来创建立方体
+    console.log(data);
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+  });
+
+
+
 class Loop {
   constructor(camera, scene, renderer) {
     this.camera = camera;
@@ -79,12 +101,12 @@ function onMouseMove(event) {
 window.addEventListener('mousemove', onMouseMove);
 
 
-function createScene(name) {
+function createScene(name, link, categories) {
     const geometry = new THREE.BoxGeometry( Math.random() * 9, 3, 3 ); 
     const material = new THREE.MeshNormalMaterial();
     const cube = new THREE.Mesh(geometry, material);
     cube.name = name;
-    cube.userData = {link: "https://mote-z.github.io/pdf/Defenit-CTF-2020.pdf", categories: ["a","b"]};
+    cube.userData = {link: link, categories: categories};
     cube.tick = () => {
         cube.rotation.z += 0.01;
         cube.rotation.x += 0.01;
@@ -101,8 +123,8 @@ publications: document.getElementById('publications')
 
 // 
 const scenes = {
-home: createScene('Home'),
-publications: createScene('Publications')
+home: createScene('Home', 'https://mote-z.github.io/pdf/Home.pdf', ["category_1","category_2"]),
+publications: createScene('Publications', 'https://mote-z.github.io/pdf/Publications.pdf', ["category_1","category_2"])
 };
 let currentScene = scenes.home;
 scene.add(currentScene);
