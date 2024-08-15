@@ -60,6 +60,13 @@ function onMouseMove(event) {
         const intersects = raycaster.intersectObjects(scene.children, true);
         if (intersects.length > 0) {
             console.log(intersects)
+            document.getElementById('infoCard').style.display = 'block';
+            document.getElementById('infoCard').innerHTML = `
+                <h3>${intersectedObject.userData.categories.join(', ')}</h3>
+                <p>Link: <a href="${intersectedObject.userData.link}" target="_blank">Open PDF</a></p>
+            `;
+        } else{
+            document.getElementById('infoCard').style.display = 'none';
         }
     }
 
