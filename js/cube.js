@@ -45,17 +45,23 @@ const mouse = new THREE.Vector2();
 // Handle mouse move event
 function onMouseMove(event) {
     event.preventDefault();
-    mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
-    mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
-	console.log(event.clientX, renderer.domElement.clientWidth, mouse.x)
-    console.log(event.clientY, renderer.domElement.clientHeight, mouse.y)
-    raycaster.setFromCamera(mouse, camera);
-
-    const intersects = raycaster.intersectObjects(scene.children, true);
-    if (intersects.length > 0) {
-		console.log(intersects)
-		intersects[0].object.material.color.set(this.color16())
+    var bounds = renderer.domElement.getBoundingClientRect();
+    var divX = bounds.left;
+    var divY = bounds.top;
+    if (event.clientX>divX && event.clientY>divY) {
+        mouse.x = ((event.clientX - divX) / renderer.domElement.clientWidth) * 2 - 1;
+        mouse.y = -((event.clientY - divY) / renderer.domElement.clientHeight) * 2 + 1;
+        console.log((event.clientX - divX), renderer.domElement.clientWidth, mouse.x)
+        console.log((event.clientY - divY), renderer.domElement.clientHeight, mouse.y)
+        raycaster.setFromCamera(mouse, camera);
+    
+        const intersects = raycaster.intersectObjects(scene.children, true);
+        if (intersects.length > 0) {
+            console.log(intersects)
+            intersects[0].object.material.color.set(this.color16())
+        }
     }
+
 }
 
 // Add event listeners
