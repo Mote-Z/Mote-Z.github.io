@@ -48,17 +48,18 @@ function onMouseMove(event) {
     var bounds = renderer.domElement.getBoundingClientRect();
     var divX = bounds.left;
     var divY = bounds.top;
-    if (event.clientX>divX && event.clientY>divY) {
-        mouse.x = ((event.clientX - divX) / renderer.domElement.clientWidth) * 2 - 1;
-        mouse.y = -((event.clientY - divY) / renderer.domElement.clientHeight) * 2 + 1;
-        console.log((event.clientX - divX), renderer.domElement.clientWidth, mouse.x)
-        console.log((event.clientY - divY), renderer.domElement.clientHeight, mouse.y)
+    var divWidth = bounds.width;
+    var divHeight = bounds.height;
+    if (event.clientX >= divX && event.clientX <= divX + divWidth && event.clientY >= divY && event.clientY <= divY + divHeight) {
+        mouse.x = ((event.clientX - divX) / divWidth) * 2 - 1;
+        mouse.y = -((event.clientY - divY) / divHeight) * 2 + 1;
+        console.log((event.clientX - divX), divWidth, mouse.x)
+        console.log((event.clientY - divY), divHeight, mouse.y)
         raycaster.setFromCamera(mouse, camera);
     
         const intersects = raycaster.intersectObjects(scene.children, true);
         if (intersects.length > 0) {
             console.log(intersects)
-            intersects[0].object.material.color.set(this.color16())
         }
     }
 
