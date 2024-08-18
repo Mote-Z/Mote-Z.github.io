@@ -121,6 +121,8 @@ home: document.getElementById('home'),
 publications: document.getElementById('publications')
 };
 
+// 类似画册 gallery的文章效果
+
 // 
 const scenes = {
 home: createScene('Home', 'https://mote-z.github.io/pdf/Home.pdf', ["category_1","category_2"]),
