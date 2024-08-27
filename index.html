@@ -1,90 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Mote-Z</title>
-<style>
-:root{
-	--body-background: linear-gradient(to right, #e6e3d9, #97b5e7);
-	--head-title-h2-background: linear-gradient(to right, #f7ce68, #fbabfe);
-	--blockquote-background: linear-gradient(to right, #f7ce68, #eaddeb);
-	--element-color: #FB9500;
-}
-body { 
-	margin-bottom: 0px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 0px;
-    width: 940px;
-    background: var(--body-background);
-}
-
-#menu {
-	position: absolute;
-	top: 30%;
-	left: 10px;
-	z-index: 1;
-}
-.menu-item {
-	cursor: pointer;
-	text-align: center;
-	padding: 4px 15px 4px 15px;
-	margin: 20px;
-	border-radius: 10px;
-	background: var(--head-title-h2-background);
-	background-size: 200% 100%;
-	background-position: 0% 0%;
-	transition: all ease-in-out 0.1s;
-	border: 1px solid #ffffff;
-}
-.menu-item:hover{
-	background-position: -100% -100%;
-	transition: all ease-in-out 0.1s;
-}
-/* reference: https://github.com/sumruler/typora-theme-phycat*/
-#myquote blockquote {
-	margin-left: 12px;
-	background: var(--blockquote-background);
-	padding: 12px;
-	border: 1px solid var(--element-color);
-	border-left-color: var(--element-color);
-	border-left-width: 4px;
-	border-radius: 4px;
-	line-height: 26px;
-}
-#myquote blockquote p {
-	color: #000;
-}
-
-#infoCard {
-	display: none;
-	position: absolute;
-	background-color: rgba(255, 255, 255, 0.9);
-	top: 30%;
-	right: 10px;
-	border: 1px solid #000;
-	z-index: 1;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mote's House</title>
+    <style>
+        body { margin: 0; }
+    </style>
 </head>
-<body>
-
-<div id="menu">
-    <div id="home" class="menu-item">Home</div>
-    <div id="publications" class="menu-item">Publications</div>
-</div>
-<div id="myquote">
-	<blockquote>Life is full of surprises.</blockquote>
-</div>
-<div id="infoCard">
-    <!-- Info Card content will be injected here -->
-</div>
-<!-- <div>
-	<a href="./pdf/Defenit-CTF-2020.pdf">Defenit-CTF-2020.pdf</a>
-	<a href="./2024/08/04/test">2024-08-04-test</a>
-</div> -->
-<iframe id="myIframe" src="./pdf/Defenit-CTF-2020.pdf" style="width:100%; height:500px;"></iframe>
-<script type="module" src="js/cube.js"></script>
-
-</body>
+    <body>
+        <div id="myWorld"></div>
+        <script src="./src/ammo.wasm.js"></script>
+        <script type="module" src="./src/index.js"></script>
+    </body>
+    
 </html>
