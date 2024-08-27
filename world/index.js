@@ -1,5 +1,5 @@
 import * as THREE from './js/three.module.js';
-import { FontLoader } from './js/loaders/FontLoader';
+import { FontLoader } from './js/loaders/FontLoader.js';
 import { TextGeometry } from './js/geometries/TextGeometry.js';
 import Stats from './js/libs/stats.module.js';
 
@@ -22,7 +22,7 @@ let URL = {
 }
 //box textures
 let boxTexture = {
-    "github": './src/resources/github.png',
+    "github": './world/resources/github.png',
 };
 
 
@@ -183,7 +183,7 @@ function init() {
   //loads text for Floyd Mesh
   function loadSimpleText(x,y,z,message, size) {
     var text_loader = new FontLoader();
-    text_loader.load('./src/resources/Roboto_Regular.json', function (font) {
+    text_loader.load('./world/resources/Roboto_Regular.json', function (font) {
         var xMid;
         var text = message;
         var fontsize = size;
@@ -257,7 +257,7 @@ function addImageBoard(scene, imageUrl, position, boardSize) {
     // 返回创建的公告栏、边框和 聚光灯
     return { board: board,  light: spotLight };
 }
-const imageUrl = './src/resources/village.jpeg'; // 图片的URL
+const imageUrl = './world/resources/village.jpeg'; // 图片的URL
 const boardSize = { width: 3, height: 4 };
 let boardPosition = new THREE.Vector3(-10, 4, -20); // 公告栏的位置
 addImageBoard(scene, imageUrl, boardPosition, boardSize);
@@ -307,16 +307,16 @@ function createBox(x, y, z, texturePath) {
     const boxBody = new Ammo.btRigidBody(boxRigidBodyInfo);
     physicsWorld.addRigidBody(boxBody);
 }
-createBox(4, 0.5, 4, './src/resources/github.jpg');
-createBox(6, 0.5, 4, './src/resources/github.jpg');
-createBox(8, 0.5, 4, './src/resources/github.jpg');
-createBox(10, 0.5, 4, './src/resources/github.jpg');
+createBox(4, 0.5, 4, './world/resources/github.jpg');
+createBox(6, 0.5, 4, './world/resources/github.jpg');
+createBox(8, 0.5, 4, './world/resources/github.jpg');
+createBox(10, 0.5, 4, './world/resources/github.jpg');
 
 
 function createBulletinBoard() {
     // Create the wooden post
     const postGeometry = new THREE.CylinderGeometry(0.1, 0.1, 2, 32); // Adjust the height as needed
-    const postTexture = new THREE.TextureLoader().load('./src/resources/wood.jpeg');
+    const postTexture = new THREE.TextureLoader().load('./world/resources/wood.jpeg');
     const postMaterial = new THREE.MeshBasicMaterial({ map: postTexture });
     const woodenPost = new THREE.Mesh(postGeometry, postMaterial);
 
@@ -325,7 +325,7 @@ function createBulletinBoard() {
     scene.add(woodenPost);
     // Create the bulletin board
     const boardGeometry = new THREE.BoxGeometry(4, 2, 0.1);
-    const boardTexture = new THREE.TextureLoader().load('./src/resources/village.jpeg');
+    const boardTexture = new THREE.TextureLoader().load('./world/resources/village.jpeg');
     const boardMaterial = new THREE.MeshBasicMaterial({ map: boardTexture });
     const bulletinBoard = new THREE.Mesh(boardGeometry, boardMaterial);
 
@@ -334,7 +334,7 @@ function createBulletinBoard() {
     scene.add(bulletinBoard);
     // Load the font
     const loader = new FontLoader();
-    loader.load('./src/resources/Roboto_Regular.json', function (font) {
+    loader.load('./world/resources/Roboto_Regular.json', function (font) {
         const textGeometry = new TextGeometry('Bulletin Board', {
             font: font,
             size: 0.4,
