@@ -1,7 +1,7 @@
-import * as THREE from './js/three.module.js';
-import { FontLoader } from './js/loaders/FontLoader.js';
-import { TextGeometry } from './js/geometries/TextGeometry.js';
-import Stats from './js/libs/stats.module.js';
+import * as THREE from '/js/three.module.js';
+import { FontLoader } from '/js/loaders/FontLoader.js';
+import { TextGeometry } from '/js/geometries/TextGeometry.js';
+import Stats from '/js/libs/stats.module.js';
 
 let clock = new THREE.Clock();
 let walls = [];
@@ -22,7 +22,7 @@ let URL = {
 }
 //box textures
 let boxTexture = {
-    "github": './world/resources/github.png',
+    "github": './resources/github.png',
 };
 
 
