@@ -3,6 +3,9 @@ import { FontLoader } from '/js/loaders/FontLoader.js';
 import { TextGeometry } from '/js/geometries/TextGeometry.js';
 import Stats from '/js/libs/stats.module.js';
 
+
+
+
 let clock = new THREE.Clock();
 let walls = [];
 let physicsWorld;
@@ -11,6 +14,7 @@ var myWorld = document.getElementById('myWorld');
 let worldWidth = window.innerWidth;
 let worldHeight = window.innerHeight;
 let sky, sun;
+
 
 // 单平面大小
 let planeWidth = 40;
@@ -45,6 +49,140 @@ function initPhysics() {
     physicsWorld = new Ammo.btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
     // 设置物理世界的重力向量，这里设置的是向下的重力，大小为9.8m/s²
     physicsWorld.setGravity(new Ammo.btVector3(0, -9.8, 0));  
+}
+
+// 创建一个星云效果的粒子系统
+function addStarsBackground(scene) {
+    const starGeometry = new THREE.BufferGeometry();
+    const starMaterial = new THREE.PointsMaterial({
+        color: 0x888888,
+        size: 0.1,
+    });
+    const starVertices = [];
+    for (let i = 0; i < 10000; i++) {
+        const x = THREE.MathUtils.randFloatSpread(200);  // -100 到 100 之间的随机数
+        const y = THREE.MathUtils.randFloatSpread(200);  // -100 到 100 之间的随机数
+        const z = THREE.MathUtils.randFloatSpread(200);  // -100 到 100 之间的随机数
+        starVertices.push(x, y, z);
+    }
+    starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+    const stars = new THREE.Points(starGeometry, starMaterial);
+    scene.add(stars);
+    // 调整星云的位置，使其位于平面下方
+    stars.position.y = -10;
+}
+
+//loads text
+function loadSimpleText(scene, x, y, z, message, size) {
+    var text_loader = new FontLoader();
+    text_loader.load('./world/resources/Roboto_Regular.json', function (font) {
+        var xMid;
+        var text = message;
+        var fontsize = size;
+        var color = 0xfffc00;
+        var textMaterials = [
+            new THREE.MeshBasicMaterial({ color: color }), // front
+            new THREE.MeshPhongMaterial({ color: color }), // side
+        ];
+        var geometry = new TextGeometry(text, {
+            font: font,
+            size: fontsize,
+            depth: 0.1,
+            curveSegments: 5,
+            bevelEnabled: true,
+            bevelThickness: 0.01,
+            bevelSize: 0.01,
+            bevelOffset: 0,
+            bevelSegments: 1,
+        });
+        geometry.computeBoundingBox();
+        geometry.computeVertexNormals();
+        xMid = -0.15 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+        geometry.translate(xMid, 0, 0);
+        text = new THREE.Mesh(geometry, textMaterials);
+        text.position.z = z;
+        text.position.y = y;
+        text.position.x = x;
+        text.receiveShadow = true;
+        text.castShadow = true;
+        scene.add(text);
+    });
+}
+
+// create bulletin board
+function createBulletinBoard(scene) {
+    // Create the wooden post
+    const postGeometry = new THREE.CylinderGeometry(0.1, 0.1, 2, 32); // Adjust the height as needed
+    const postTexture = new THREE.TextureLoader().load('./world/resources/wood.jpeg');
+    const postMaterial = new THREE.MeshBasicMaterial({ map: postTexture });
+    const woodenPost = new THREE.Mesh(postGeometry, postMaterial);
+
+    // Position the post below the bulletin board
+    woodenPost.position.set(0, 0, 0); // Adjust position to connect with the board
+    scene.add(woodenPost);
+    // Create the bulletin board
+    const boardGeometry = new THREE.BoxGeometry(4, 2, 0.1);
+    const boardTexture = new THREE.TextureLoader().load('./world/resources/village.jpeg');
+    const boardMaterial = new THREE.MeshBasicMaterial({ map: boardTexture });
+    const bulletinBoard = new THREE.Mesh(boardGeometry, boardMaterial);
+
+    // Position the board slightly above the ground
+    bulletinBoard.position.set(0, 2, 0);
+    scene.add(bulletinBoard);
+    // Load the font
+    const loader = new FontLoader();
+    loader.load('./world/resources/Roboto_Regular.json', function (font) {
+        const textGeometry = new TextGeometry('Bulletin Board', {
+            font: font,
+            size: 0.4,
+            height: 0.1,
+        });
+
+        const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+
+        // Position the text under the board
+        textMesh.position.set(-1, 0, 2);
+        scene.add(textMesh);
+    });
+}
+
+// 在场景中添加一个公告栏展示图片
+function addImageBoard(scene, imageUrl, x, y, z, boardSize) {
+    // 板的大小参数，格式为 { width: 5, height: 3 }
+    boardSize = boardSize || { width: 5, height: 3 };
+
+    // 加载图片纹理
+    const textureLoader = new THREE.TextureLoader();
+    const texture = textureLoader.load(imageUrl, function(texture) {
+        // 图片加载完成后，更新纹理
+        texture.needsUpdate = true;
+    });
+
+    // 创建公告栏的几何形状
+    const boardGeometry = new THREE.PlaneGeometry(boardSize.width, boardSize.height);
+    // 创建材质并设置图片纹理
+    const boardMaterial = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+        side: THREE.DoubleSide
+    });
+    // 创建网格并设置材质
+    const board = new THREE.Mesh(boardGeometry, boardMaterial);
+    let boardPosition = new THREE.Vector3(x, y, z); // 公告栏的位置
+    board.position.copy(boardPosition);
+    // 聚光灯
+    const spotLight = new THREE.SpotLight(0xffffff, 1);
+    spotLight.position.copy(board.position);
+    spotLight.angle = Math.PI / 6;
+
+    // 将公告栏、边框和 聚光灯添加到场景中
+    scene.add(board);
+    // scene.add(frame);
+    // scene.add(spotLight);
+
+    // 返回创建的公告栏、边框和 聚光灯
+    return { board: board,  light: spotLight };
 }
 
 // 初始化场景和物理
@@ -135,24 +273,22 @@ function init() {
     }
     createWalls(planeWidth, planeDepth);
 
-    // 创建一个星云效果的粒子系统
-    const starGeometry = new THREE.BufferGeometry();
-    const starMaterial = new THREE.PointsMaterial({
-        color: 0x888888,
-        size: 0.1,
-    });
-    const starVertices = [];
-    for (let i = 0; i < 10000; i++) {
-        const x = THREE.MathUtils.randFloatSpread(200);  // -100 到 100 之间的随机数
-        const y = THREE.MathUtils.randFloatSpread(200);  // -100 到 100 之间的随机数
-        const z = THREE.MathUtils.randFloatSpread(200);  // -100 到 100 之间的随机数
-        starVertices.push(x, y, z);
-    }
-    starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
-    const stars = new THREE.Points(starGeometry, starMaterial);
-    scene.add(stars);
-    // 调整星云的位置，使其位于平面下方
-    stars.position.y = -10;
+    // load stars
+    addStarsBackground(scene);
+    // load text
+    loadSimpleText(scene, 0, 0, -1, 'Mote', 0.5)
+    loadSimpleText(scene, -2, 4, -5, 'Github', 0.3)
+    loadSimpleText(scene, 2, 4, -5, 'Email', 0.3)
+    // load boards
+    createBulletinBoard(scene);
+    // load pictures
+    const imageUrl = './world/resources/village.jpeg'; // 图片的URL
+    const boardSize = { width: 3, height: 4 };
+    addImageBoard(scene, imageUrl, -10, 4, -20, boardSize);
+    addImageBoard(scene, imageUrl, -5, 4, -20, boardSize);
+    addImageBoard(scene, imageUrl, 0, 4, -20, boardSize);
+    addImageBoard(scene, imageUrl, 5, 4, -20, boardSize);
+    addImageBoard(scene, imageUrl, 10, 4, -20, boardSize);
 
     // 创建小球
     const ballGeometry = new THREE.SphereGeometry(0.5, 32, 32);
@@ -179,99 +315,69 @@ function init() {
     physicsWorld.addRigidBody(ballBody);
 
 
-    
-  //loads text for Floyd Mesh
-  function loadSimpleText(x,y,z,message, size) {
-    var text_loader = new FontLoader();
-    text_loader.load('./world/resources/Roboto_Regular.json', function (font) {
-        var xMid;
-        var text = message;
-        var fontsize = size;
-        var color = 0xfffc00;
-        var textMaterials = [
-            new THREE.MeshBasicMaterial({ color: color }), // front
-            new THREE.MeshPhongMaterial({ color: color }), // side
-        ];
-        var geometry = new TextGeometry(text, {
-            font: font,
-            size: fontsize,
-            depth: 0.1,
-            curveSegments: 5,
-            bevelEnabled: true,
-            bevelThickness: 0.01,
-            bevelSize: 0.01,
-            bevelOffset: 0,
-            bevelSegments: 1,
-        });
-        geometry.computeBoundingBox();
-        geometry.computeVertexNormals();
-        xMid = -0.15 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-        geometry.translate(xMid, 0, 0);
-        text = new THREE.Mesh(geometry, textMaterials);
-        text.position.z = z;
-        text.position.y = y;
-        text.position.x = x;
-        text.receiveShadow = true;
-        text.castShadow = true;
-        scene.add(text);
-    });
-  }
-  loadSimpleText(0, 0, -1, 'Mote', 0.5)
-  loadSimpleText(-2, 4, -5, 'Github', 0.3)
-  loadSimpleText(2, 4, -5, 'Email', 0.3)
+// Initialize Raycaster and Mouse
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
 
 
-// 在场景中添加一个公告栏展示图片
-function addImageBoard(scene, imageUrl, position, boardSize) {
-    // 板的大小参数，格式为 { width: 5, height: 3 }
-    boardSize = boardSize;
+// Function to update the cursor style
+function updateCursorStyle() {
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(scene.children);
 
-    // 加载图片纹理
-    const textureLoader = new THREE.TextureLoader();
-    const texture = textureLoader.load(imageUrl, function(texture) {
-        // 图片加载完成后，更新纹理
-        texture.needsUpdate = true;
-    });
+    let isHovering = false;
 
-    // 创建公告栏的几何形状
-    const boardGeometry = new THREE.PlaneGeometry(boardSize.width, boardSize.height);
-    // 创建材质并设置图片纹理
-    const boardMaterial = new THREE.MeshBasicMaterial({
-        map: texture,
-        transparent: true,
-        side: THREE.DoubleSide
-    });
-    // 创建网格并设置材质
-    const board = new THREE.Mesh(boardGeometry, boardMaterial);
-    board.position.copy(position);
-    // 聚光灯
-    const spotLight = new THREE.SpotLight(0xffffff, 1);
-    spotLight.position.copy(board.position);
-    spotLight.angle = Math.PI / 6;
+    for (let i = 0; i < intersects.length; i++) {
+        const object = intersects[i].object;
+        if (object.userData && object.userData.url) {
+            // Change the cursor style to pointer
+            document.body.style.cursor = 'pointer';
+            isHovering = true;
+            break;
+        }
+    }
 
-    // 将公告栏、边框和 聚光灯添加到场景中
-    scene.add(board);
-    // scene.add(frame);
-    // scene.add(spotLight);
-
-    // 返回创建的公告栏、边框和 聚光灯
-    return { board: board,  light: spotLight };
+    if (!isHovering) {
+        // Reset the cursor style to default
+        document.body.style.cursor = 'default';
+    }
 }
-const imageUrl = './world/resources/village.jpeg'; // 图片的URL
-const boardSize = { width: 3, height: 4 };
-let boardPosition = new THREE.Vector3(-10, 4, -20); // 公告栏的位置
-addImageBoard(scene, imageUrl, boardPosition, boardSize);
-boardPosition = new THREE.Vector3(-5, 4, -20); // 公告栏的位置
-addImageBoard(scene, imageUrl, boardPosition, boardSize);
-boardPosition = new THREE.Vector3(0, 4, -20); // 公告栏的位置
-addImageBoard(scene, imageUrl, boardPosition, boardSize);
-boardPosition = new THREE.Vector3(5, 4, -20); // 公告栏的位置
-addImageBoard(scene, imageUrl, boardPosition, boardSize);
-boardPosition = new THREE.Vector3(10, 4, -20); // 公告栏的位置
-addImageBoard(scene, imageUrl, boardPosition, boardSize);
+
+// Add a mousemove event listener to track the mouse position
+window.addEventListener('mousemove', (event) => {
+    // Normalize mouse coordinates to [-1, 1]
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    // Update the cursor style based on mouse position
+    updateCursorStyle();
+});
+
+// Add a click event listener
+window.addEventListener('click', (event) => {
+    // Normalize mouse coordinates to [-1, 1]
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    // Update the raycaster with the camera and mouse position
+    raycaster.setFromCamera(mouse, camera);
+
+    // Calculate objects intersecting the ray
+    const intersects = raycaster.intersectObjects(scene.children);
+
+    // Check if the box was clicked
+    for (let i = 0; i < intersects.length; i++) {
+        const object = intersects[i].object;
+        if (object.userData && object.userData.url) {
+            // Open the link in a new tab
+            window.open(object.userData.url, '_blank');
+            break;
+        }
+    }
+});
 
 // this function was enlighted by  https://0xfloyd.com/
-function createBox(x, y, z, texturePath) {
+function createBox(scene, x, y, z, texturePath, url) {
     // 创建BoxGeometry，指定box的宽度、高度和深度
     var geometry = new THREE.BoxGeometry(1, 1, 0.2);
     // 加载图片作为材质贴图
@@ -294,6 +400,9 @@ function createBox(x, y, z, texturePath) {
     scene.add(githubBox);
     // 将box的位置设置到场景中
     githubBox.position.set(x, y, z);
+    // Store the URL in the box's userData
+    githubBox.userData.url = url;
+
     console.log(githubBox);
     // 创建Ammo的刚体
     const boxShape = new Ammo.btBoxShape(new Ammo.btVector3(0.5, 0.5, 0.1)); // 单位尺寸的box
@@ -306,50 +415,16 @@ function createBox(x, y, z, texturePath) {
     const boxRigidBodyInfo = new Ammo.btRigidBodyConstructionInfo(boxMass, boxMotionState, boxShape, boxLocalInertia);
     const boxBody = new Ammo.btRigidBody(boxRigidBodyInfo);
     physicsWorld.addRigidBody(boxBody);
+
 }
-createBox(4, 0.5, 4, './world/resources/github.jpg');
-createBox(6, 0.5, 4, './world/resources/github.jpg');
-createBox(8, 0.5, 4, './world/resources/github.jpg');
-createBox(10, 0.5, 4, './world/resources/github.jpg');
+createBox(scene, 4, 0.5, 4, './world/resources/github.jpg', 'https://github.com/Mote-Z/Mote-Z');
+createBox(scene, 6, 0.5, 4, './world/resources/github.jpg', 'https://github.com/Mote-Z/Mote-Z');
+createBox(scene, 8, 0.5, 4, './world/resources/github.jpg', 'https://github.com/Mote-Z/Mote-Z');
+createBox(scene, 10, 0.5, 4, './world/resources/github.jpg', 'https://github.com/Mote-Z/Mote-Z');
 
 
-function createBulletinBoard() {
-    // Create the wooden post
-    const postGeometry = new THREE.CylinderGeometry(0.1, 0.1, 2, 32); // Adjust the height as needed
-    const postTexture = new THREE.TextureLoader().load('./world/resources/wood.jpeg');
-    const postMaterial = new THREE.MeshBasicMaterial({ map: postTexture });
-    const woodenPost = new THREE.Mesh(postGeometry, postMaterial);
 
-    // Position the post below the bulletin board
-    woodenPost.position.set(0, 0, 0); // Adjust position to connect with the board
-    scene.add(woodenPost);
-    // Create the bulletin board
-    const boardGeometry = new THREE.BoxGeometry(4, 2, 0.1);
-    const boardTexture = new THREE.TextureLoader().load('./world/resources/village.jpeg');
-    const boardMaterial = new THREE.MeshBasicMaterial({ map: boardTexture });
-    const bulletinBoard = new THREE.Mesh(boardGeometry, boardMaterial);
 
-    // Position the board slightly above the ground
-    bulletinBoard.position.set(0, 2, 0);
-    scene.add(bulletinBoard);
-    // Load the font
-    const loader = new FontLoader();
-    loader.load('./world/resources/Roboto_Regular.json', function (font) {
-        const textGeometry = new TextGeometry('Bulletin Board', {
-            font: font,
-            size: 0.4,
-            height: 0.1,
-        });
-
-        const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-        const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-
-        // Position the text under the board
-        textMesh.position.set(-1, 0, 2);
-        scene.add(textMesh);
-    });
-}
-createBulletinBoard();
 
 // 移动速度
 const moveSpeed = 5;
