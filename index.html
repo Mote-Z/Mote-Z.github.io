@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xiang Zhang | Cybersecurity Researcher</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Xiang Zhang - Ph.D. Candidate in Cybersecurity from UCAS. Researching Security Operations, Network Architecture, Attack Surface Analysis, and Knowledge Graph-based Defense.">
+    <meta name="keywords" content="Cybersecurity, Security Operations, Network Architecture, Attack Surface Analysis, Knowledge Graph, Visualization, Academic Research, UCAS">
+    <meta name="author" content="Xiang Zhang">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Xiang Zhang | Cybersecurity Researcher">
+    <meta property="og:description" content="Ph.D. Candidate in Cybersecurity from UCAS. Researching Security Operations, Network Architecture, and Knowledge Graph-based Defense.">
+    <meta property="og:image" content="og-image.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Xiang Zhang | Cybersecurity Researcher">
+    <meta name="twitter:description" content="Ph.D. Candidate in Cybersecurity from UCAS. Researching Security Operations, Network Architecture, and Knowledge Graph-based Defense.">
+    <meta name="twitter:image" content="og-image.png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { 'sans': ['"Atkinson Hyperlegible"', 'system-ui'], 'chinese': ['"Noto Serif SC"', 'serif'] },
+                    colors: {
+                        'ink': { 50:'#fafafa',100:'#f5f5f5',200:'#e5e5e5',300:'#d4d4d4',400:'#a3a3a3',500:'#737373',600:'#525252',700:'#404040',800:'#262626',900:'#171717' },
+                        'vermilion': '#c23a2b',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Atkinson Hyperlegible', system-ui, sans-serif; }
+
+        /* Ink wash background with subtle animation */
+        .ink-bg {
+            background-color: #fafaf8;
+            min-height: 100vh;
+        }
+        .ink-bg::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse 120% 60% at var(--ink-x1, 5%) var(--ink-y1, 10%), rgba(194,58,43,0.03) 0%, transparent 40%),
+                radial-gradient(ellipse 80% 50% at var(--ink-x2, 95%) var(--ink-y2, 90%), rgba(100,100,100,0.04) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 60% at 50% 50%, rgba(120,120,120,0.02) 0%, transparent 60%);
+            animation: ink-drift 20s ease-in-out infinite;
+        }
+        .dark .ink-bg {
+            background-color: #0a0a0a;
+        }
+        .dark .ink-bg::before {
+            background:
+                radial-gradient(ellipse 100% 60% at var(--ink-x1, 5%) var(--ink-y1, 10%), rgba(194,58,43,0.06) 0%, transparent 40%),
+                radial-gradient(ellipse 80% 50% at var(--ink-x2, 90%) var(--ink-y2, 85%), rgba(60,60,80,0.08) 0%, transparent 50%);
+        }
+        @keyframes ink-drift {
+            0%, 100% { --ink-x1: 5%; --ink-y1: 10%; --ink-x2: 95%; --ink-y2: 90%; }
+            25% { --ink-x1: 8%; --ink-y1: 15%; --ink-x2: 92%; --ink-y2: 85%; }
+            50% { --ink-x1: 3%; --ink-y1: 12%; --ink-x2: 97%; --ink-y2: 92%; }
+            75% { --ink-x1: 7%; --ink-y1: 8%; --ink-x2: 93%; --ink-y2: 88%; }
+        }
+        @property --ink-x1 {
+            syntax: '<percentage>';
+            inherits: false;
+            initial-value: 5%;
+        }
+        @property --ink-y1 {
+            syntax: '<percentage>';
+            inherits: false;
+            initial-value: 10%;
+        }
+        @property --ink-x2 {
+            syntax: '<percentage>';
+            inherits: false;
+            initial-value: 95%;
+        }
+        @property --ink-y2 {
+            syntax: '<percentage>';
+            inherits: false;
+            initial-value: 90%;
+        }
+
+        .seal {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #c23a2b;
+            border-radius: 50%;
+            color: #c23a2b;
+            font-weight: 600;
+            background: #fafaf8;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .seal:hover {
+            background: #c23a2b;
+            color: #fff;
+            transform: scale(1.05);
+        }
+        .dark .seal {
+            background: #0a0a0a;
+        }
+        .dark .seal:hover {
+            background: #c23a2b;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .nav-link.active {
+            color: #c23a2b;
+            font-weight: 600;
+        }
+
+        .bibtex-drawer {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.3s ease, opacity 0.2s ease;
+        }
+        .bibtex-drawer.open {
+            max-height: 300px;
+            opacity: 1;
+        }
+
+        /* Page layout */
+        .page-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: 100vh;
+            gap: 0;
+        }
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 720px;
+            padding: 2rem 2rem;
+            line-height: 1.6;
+        }
+        .section-title {
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #c23a2b;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(194,58,43,0.3) 0%, transparent 100%);
+        }
+
+        /* Ship wheel navigation */
+        .helm-column {
+            position: relative;
+            border-right: 1px solid rgba(194,58,43,0.08);
+        }
+        .dark .helm-column {
+            border-right-color: rgba(194,58,43,0.15);
+        }
+        .helm-nav {
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2.5rem 1.5rem;
+        }
+
+        /* Helm wrapper - contains wheel and labels */
+        .helm-wrapper {
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Helm container */
+        .helm-container {
+            position: relative;
+            width: 160px;
+            height: 160px;
+        }
+        .helm-wheel {
+            position: absolute;
+            inset: 0;
+            transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Outer wheel rings */
+        .helm-ring {
+            position: absolute;
+            inset: 6px;
+            border: 2px solid rgba(194,58,43,0.25);
+            border-radius: 50%;
+        }
+        .helm-ring::before {
+            content: '';
+            position: absolute;
+            inset: 5px;
+            border: 1px solid rgba(194,58,43,0.12);
+            border-radius: 50%;
+        }
+        .helm-ring::after {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border: 1px dashed rgba(194,58,43,0.1);
+            border-radius: 50%;
+        }
+
+        /* Spokes */
+        .helm-spoke {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 70px;
+            height: 2.5px;
+            background: linear-gradient(90deg, rgba(194,58,43,0.6) 0%, rgba(194,58,43,0.15) 100%);
+            transform-origin: left center;
+            border-radius: 1px;
+        }
+        .helm-spoke:nth-of-type(1) { transform: rotate(0deg); }
+        .helm-spoke:nth-of-type(2) { transform: rotate(120deg); }
+        .helm-spoke:nth-of-type(3) { transform: rotate(240deg); }
+
+        /* Handle knobs */
+        .helm-spoke::after {
+            content: '';
+            position: absolute;
+            right: -4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle, #c23a2b 50%, rgba(194,58,43,0.3) 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 6px rgba(194,58,43,0.3);
+        }
+
+        /* Center hub */
+        .helm-hub {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+        }
+        .helm-hub .seal {
+            width: 2.5rem;
+            height: 2.5rem;
+            font-size: 0.85rem;
+            box-shadow: 0 0 0 4px #fafaf8, 0 0 15px rgba(194,58,43,0.15);
+            transition: all 0.3s ease;
+        }
+        .dark .helm-hub .seal {
+            box-shadow: 0 0 0 4px #0a0a0a, 0 0 18px rgba(194,58,43,0.25);
+        }
+
+        /* Navigation labels - vertical list below wheel */
+        .helm-labels {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.25rem;
+            margin-top: 3rem;
+            width: 100%;
+        }
+        .helm-item {
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            opacity: 0.4;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 2px;
+            position: relative;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .helm-item:hover {
+            opacity: 0.8;
+            transform: translateX(3px);
+        }
+        .helm-item.active {
+            opacity: 1;
+            color: #c23a2b;
+            background: rgba(194,58,43,0.06);
+        }
+        .helm-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 60%;
+            background: #c23a2b;
+            border-radius: 1px;
+        }
+
+        /* Control buttons */
+        .helm-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(194,58,43,0.08);
+        }
+
+        /* BibTeX copy button */
+        .bibtex-wrapper {
+            position: relative;
+        }
+        .bibtex-copy {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.6rem;
+            background: rgba(194,58,43,0.1);
+            color: #c23a2b;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s ease, background 0.2s ease;
+        }
+        .bibtex-drawer:hover .bibtex-copy,
+        .bibtex-copy:focus {
+            opacity: 1;
+        }
+        .bibtex-copy:hover {
+            background: rgba(194,58,43,0.2);
+            transform: scale(1.05);
+        }
+        .bibtex-copy.copied {
+            background: #c23a2b;
+            color: #fff;
+        }
+
+        /* Mobile floating navigation */
+        .mobile-nav-fab {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 100;
+        }
+        .mobile-nav-btn {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background: #fafaf8;
+            border: 2px solid #c23a2b;
+            color: #c23a2b;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+        .dark .mobile-nav-btn {
+            background: #0a0a0a;
+        }
+        .mobile-nav-btn:hover, .mobile-nav-btn.active {
+            background: #c23a2b;
+            color: #fff;
+            transform: scale(1.1);
+        }
+        .mobile-menu {
+            position: absolute;
+            bottom: 4rem;
+            right: 0;
+            background: #fafaf8;
+            border: 1px solid rgba(194,58,43,0.15);
+            border-radius: 8px;
+            padding: 0.75rem 0;
+            min-width: 140px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+        .dark .mobile-menu {
+            background: #171717;
+        }
+        .mobile-menu.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .mobile-menu a, .mobile-menu button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            color: inherit;
+            text-decoration: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .mobile-menu a:hover, .mobile-menu button:hover {
+            background: rgba(194,58,43,0.06);
+            transform: translateX(3px);
+        }
+        .mobile-menu-divider {
+            height: 1px;
+            background: rgba(194,58,43,0.1);
+            margin: 0.5rem 0;
+        }
+
+        /* Research Interests */
+        .research-interests {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .research-tag {
+            background: rgba(194,58,43, 0.1);
+            color: #c23a2b;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            transition: all 0.2s ease;
+            cursor: default;
+        }
+
+        .dark .research-tag {
+            background: rgba(194,58,43, 0.2);
+        }
+
+        .research-tag:hover {
+            background: rgba(194,58,43, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .page-layout {
+                grid-template-columns: 1fr;
+            }
+            .helm-column {
+                display: none;
+            }
+            .content-wrapper {
+                padding: 2rem 1.5rem 5rem;
+                max-width: 100%;
+            }
+            .mobile-nav-fab {
+                display: block;
+            }
+
+            /* Adjust mobile content padding for readability */
+            #about, #publications, #projects {
+                max-width: 100%;
+            }
+        }
+
+        /* Enhanced focus states for accessibility */
+        .nav-link:focus,
+        .helm-item:focus,
+        .lang-btn:focus,
+        .bibtex-copy:focus,
+        .mobile-nav-btn:focus,
+        .mobile-menu a:focus,
+        .mobile-menu button:focus {
+            outline: 2px solid #c23a2b;
+            outline-offset: 2px;
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body class="ink-bg text-ink-800 dark:text-ink-200 transition-colors duration-300">
+
+    <div class="page-layout">
+        <!-- Ship Wheel Navigation - Sticky Left Column -->
+        <aside class="helm-column">
+            <nav class="helm-nav text-ink-500 dark:text-ink-400" aria-label="Main navigation">
+                <div class="helm-wrapper">
+                    <!-- Ship wheel -->
+                    <div class="helm-container">
+                        <div id="helm-wheel" class="helm-wheel">
+                            <div class="helm-ring"></div>
+                            <div class="helm-spoke"></div>
+                            <div class="helm-spoke"></div>
+                            <div class="helm-spoke"></div>
+                        </div>
+                        <div class="helm-hub">
+                            <a href="#" class="seal" data-i18n="nav.logo">ZX</a>
+                        </div>
+                    </div>
+                    <!-- Navigation labels - vertical list -->
+                    <div class="helm-labels">
+                        <a href="#about" class="helm-item nav-link" data-i18n="nav.about">About</a>
+                        <a href="#publications" class="helm-item nav-link" data-i18n="nav.publications">Publications</a>
+                        <a href="#projects" class="helm-item nav-link" data-i18n="nav.projects">Projects</a>
+                    </div>
+                    <!-- Control buttons -->
+                    <div class="helm-controls">
+                        <button id="theme-toggle" class="p-1 hover:text-ink-700 dark:hover:text-ink-200">
+                            <i id="sun-icon" class="fas fa-sun text-xs"></i>
+                            <i id="moon-icon" class="fas fa-moon text-xs hidden"></i>
+                        </button>
+                    </div>
+
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content-wrapper">
+            <!-- Hero Section -->
+            <section id="about" class="pb-6">
+                <h1 class="text-3xl font-semibold text-ink-900 dark:text-ink-50 mb-2 tracking-tight">Mote</h1>
+                <p class="text-sm text-ink-500 dark:text-ink-400 mb-3">
+                    Security Researcher and Information Security Engineer
+                </p>
+                <p class="text-sm text-ink-600 dark:text-ink-300 leading-relaxed mb-3">Expert in Security Architecture Modeling and infrastructure resilience. Focused on attack surface analysis and proactive defense by leveraging Knowledge Graphs and Visualization. Bridging the gap between Security Operations and robust Network Architecture. Experienced in CTF competitions and penetration testing.</p>
+
+                <!-- Certifications -->
+                <h3 class="text-sm font-medium text-ink-700 dark:text-ink-300 mt-3 mb-2">Certifications:</h3>
+                <div class="research-interests">
+                    <span class="research-tag">Cisco CCNP</span>
+                    <span class="research-tag">Alibaba Cloud ACP（LLM）</span>
+                </div>
+
+                <!-- Research Interests -->
+                <h3 class="text-sm font-medium text-ink-700 dark:text-ink-300 mt-3 mb-2">Research Interests:</h3>
+                <div class="research-interests">
+                    <span class="research-tag">Cybersecurity</span>
+                    <span class="research-tag">Knowledge Graphs</span>
+                    <span class="research-tag">Network Architecture</span>
+                    <span class="research-tag">Attack Surface Analysis</span>
+                    <span class="research-tag">Visualization</span>
+                    <span class="research-tag">Proactive Defense</span>
+                </div>
+
+                <div id="social-links" class="flex items-center gap-4 text-ink-500 dark:text-ink-400 text-sm"></div>
+            </section>
+
+            <!-- Publications -->
+            <section id="publications" class="py-6 border-t border-ink-200/30 dark:border-ink-700/30" aria-labelledby="pub-heading">
+                <h2 id="pub-heading" class="section-title">Selected Publications</h2>
+                <ol id="pub-list" class="space-y-3 text-sm list-none" role="list" aria-label="Publication list"></ol>
+            </section>
+
+            <!-- Projects -->
+            <section id="projects" class="py-5 border-t border-ink-200/30 dark:border-ink-700/30" aria-labelledby="proj-heading">
+                <h2 id="proj-heading" class="section-title">Projects</h2>
+                <div id="proj-list" class="space-y-2 text-sm" role="list" aria-label="Project list"></div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="border-t border-ink-200/30 dark:border-ink-700/30 py-4 mt-4">
+                <div class="flex justify-between text-[10px] text-ink-400 dark:text-ink-500">
+                    <span>© 2025 Mote</span>
+                    <span id="footer-update">Updated: Feb 2025</span>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Mobile Navigation FAB -->
+    <div class="mobile-nav-fab">
+        <div id="mobile-menu" class="mobile-menu">
+            <a href="#about" class="mobile-nav-link" data-section="about"><i class="fas fa-user w-4"></i> <span>About</span></a>
+            <a href="#publications" class="mobile-nav-link" data-section="publications"><i class="fas fa-book w-4"></i> <span>Publications</span></a>
+            <a href="#projects" class="mobile-nav-link" data-section="projects"><i class="fas fa-code w-4"></i> <span>Projects</span></a>
+            <div class="mobile-menu-divider"></div>
+            <button id="mobile-theme-toggle"><i class="fas fa-adjust w-4"></i> <span id="mobile-theme-text">Dark</span></button>
+        </div>
+        <button id="mobile-nav-btn" class="mobile-nav-btn" aria-label="Navigation menu" data-i18n="nav.logo">ZX</button>
+    </div>
+
+    <!-- Toast -->
+    <div id="copy-toast" class="fixed bottom-4 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-ink-900 text-white text-xs rounded opacity-0 transition-opacity duration-300 pointer-events-none">Copied!</div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════
+        // DATA CONFIGURATION
+        // Edit the data below to update website content without modifying HTML
+        // ═══════════════════════════════════════════════════════════════
+
+        const DATA = {
+            // Profile
+            profile: {
+                logo: { en: 'ZX' },
+                name: { en: 'Mote' },
+                title: { en: 'Security Researcher and Information Security Engineer' },
+                institution: { en: '' },
+                institutionUrl: '#',
+                bio: {
+                    en: 'Expert in Security Architecture Modeling and infrastructure resilience. Focused on attack surface analysis and proactive defense by leveraging Knowledge Graphs and Visualization. Bridging the gap between Security Operations and robust Network Architecture. Experienced in CTF competitions and penetration testing.'
+                },
+                social: [
+                    { icon: 'fas fa-graduation-cap', url: '#', title: 'Google Scholar' },
+                    { icon: 'fab fa-github', url: 'https://github.com/Mote-Z', title: 'GitHub' },
+                    { icon: 'fab fa-linkedin', url: 'https://www.linkedin.com/in/xiang-zhang-moteorz/', title: 'LinkedIn' },
+                    { icon: 'fab fa-x-twitter', url: 'https://x.com/MoteShawn', title: 'Twitter' },
+                    { icon: 'fas fa-envelope', url: 'mailto:mote.orzzz@gmail.com', title: 'Email' }
+                ],
+                cvUrl: '#'
+            },
+
+            // Publications
+            publications: [
+                {
+                    venue: 'ICA3PP',
+                    title: 'Auto-Recon: An Automated Network Reconnaissance System Based on Knowledge Graph',
+                    authors: '<span class="text-vermilion">Zhang, Xiang</span>, Q. Guo, Y. Liu, and X. Gong',
+                    info: "ICA3PP'21 • DOI: 10.1007/978-3-030-95391-1_7",
+                    time: "2021",
+                    links: { pdf: 'https://doi.org/10.1007/978-3-030-95391-1_7', code: '#' },
+                    bibtex: '@inproceedings{zhang2022autorecon, title={Auto-Recon: An Automated Network Reconnaissance System Based on Knowledge Graph}, author={Zhang, Xiang and Guo, Qingli and Liu, Yuan and Gong, Xiaorui}, booktitle={International Conference on Algorithms and Architectures for Parallel Processing}, pages={101--115}, year={2022}, organization={Springer}}'
+                }
+            ],
+
+            // Projects
+            projects: [
+                { icon: 'fas fa-shield-halved', name: { en: 'AD Domain Security Governance Platform' }, desc: { en: 'AD domain security governance with traffic behavior analysis and attack path modeling.' }, highlights: { en: ['Traffic behavior analysis', 'Log correlation analysis', 'Attack path modeling'] }, time: "2022-2023" },
+                { icon: 'fas fa-eye', name: { en: 'EASM Monitoring System' }, desc: { en: 'Dynamic internet-facing asset mapping with exposure discovery.' }, highlights: { en: ['Automated asset collection', 'Vulnerability discovery', 'Distributed architecture'] }, time: "2022-Present" },
+                { icon: 'fas fa-network-wired', name: { en: 'NetOps Automation & Process Orchestration' }, desc: { en: 'Enterprise NetOps automation with heterogeneous device compatibility.' }, highlights: { en: ['Heterogeneous device compatibility', 'Path simulation computation', 'Policy automation'] }, time: "2023-Present" },
+                { icon: 'fas fa-bug', name: { en: 'Security Operations' }, desc: { en: 'Comprehensive security operations with SIEM/SOAR and AI-powered analysis.' }, highlights: { en: ['Traffic mirroring', 'Big data analytics', 'SIEM/SOAR', 'Email security', 'AI analysis'] }, time: "2023-Present" },
+                { icon: 'fas fa-calculator', name: { en: 'CAASM Risk Quantification' }, desc: { en: 'Integrated cybersecurity asset management with risk quantification models.' }, highlights: { en: ['Multi-source data fusion', 'Security baseline alignment', 'Asset graph modeling', 'Visual analytics'] }, time: "2024-Present" },
+                { icon: 'fas fa-lock', name: { en: 'Zero Trust Architecture Transformation' }, desc: { en: 'Zero Trust migration with SPA protocol and identity-driven access control.' }, highlights: { en: ['Single Packet Authorization', 'Identity-driven governance', 'SASE integration'] }, time: "2025-Present" },
+            ],
+
+            // UI text
+            ui: {
+                nav: {
+                    en: ['About', 'Publications', 'Projects']
+                },
+                sections: {
+                    publications: { en: 'Selected Publications' },
+                    projects: { en: 'Projects' }
+                },
+                cite: { en: 'Cite' },
+                fullList: { en: 'Full list' },
+                footer: { en: 'Updated: Feb 2025' }
+            }
+        };
+
+        // ═══════════════════════════════════════════════════════════════
+        // RENDER FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════
+
+        let lang = 'en';
+        const $ = (sel) => document.querySelector(sel);
+        const $$ = (sel) => document.querySelectorAll(sel);
+
+        // Get localized text
+        const t = (obj) => typeof obj === 'object' ? (obj[lang] || obj.en) : obj;
+
+        // Format BibTeX with proper indentation
+        function formatBibtex(raw) {
+            return raw
+                .replace(/,\s*/g, ',\n  ')
+                .replace(/\{(\w)/, '{\n  $1')
+                .replace(/\}$/, '\n}');
+        }
+
+        // Render page
+        function renderPage() {
+            const d = DATA;
+
+            // Logo
+            $$('.seal').forEach(el => el.textContent = t(d.profile.logo));
+
+            // Navigation labels
+            $$('.helm-item').forEach((el, i) => {
+                if (d.ui.nav[lang][i]) el.textContent = d.ui.nav[lang][i];
+            });
+
+            // Profile info - Direct assignment since we removed data-i18n attributes
+            const nameElement = document.querySelector('#about h1.text-3xl');
+            if (nameElement) nameElement.textContent = t(d.profile.name);
+
+            const titleElement = document.querySelector('#about .text-sm.text-ink-500');
+            if (titleElement) titleElement.textContent = t(d.profile.title);
+
+            const bioElement = document.querySelector('#about .leading-relaxed');
+            if (bioElement) bioElement.innerHTML = t(d.profile.bio);
+
+            // Social links
+            const socialHtml = d.profile.social.map(s =>
+                `<a href="${s.url}" ${s.url.startsWith('mailto:') ? '' : 'target="_blank" rel="noopener noreferrer"'} class="hover:text-vermilion transition-colors" title="${s.title}" aria-label="${s.title}"><i class="${s.icon}" aria-hidden="true"></i></a>`
+            ).join('') + `<span class="w-px h-4 bg-ink-200 dark:bg-ink-700" aria-hidden="true"></span>
+            <a href="${d.profile.cvUrl}" class="hover:text-vermilion transition-colors group" target="_blank" rel="noopener noreferrer" aria-label="Download CV">CV <i class="fas fa-arrow-right text-xs ml-1 group-hover:translate-x-0.5 transition-transform" aria-hidden="true"></i></a>`;
+            $('#social-links').innerHTML = socialHtml;
+
+            // Publications (semantic li tags)
+            const pubTitleElement = document.querySelector('#pub-heading');
+            if (pubTitleElement) pubTitleElement.textContent = t(d.ui.sections.publications);
+
+            const fullListElement = document.querySelector('#pub-full-text');
+            if (fullListElement) fullListElement.textContent = t(d.ui.fullList);
+
+            $('#pub-list').innerHTML = d.publications.map((p, i) =>
+                `<li class="group">
+                    <article class="flex items-start gap-2">
+                        <span class="text-[10px] px-1 py-0.5 bg-ink-800 dark:bg-ink-200 text-white dark:text-ink-800 rounded shrink-0 mt-0.5" aria-label="Venue">${p.venue}</span>
+                        <div>
+                            <h3 class="font-medium text-ink-900 dark:text-ink-50 leading-tight group-hover:text-vermilion">${p.title}</h3>
+                            <p class="text-xs text-ink-500 mt-0.5">${p.authors} · ${p.info}${p.award ? ` · <span class="text-vermilion">${t(p.award)}</span>` : ''}</p>
+                            <p class="text-xs text-ink-400 mt-0.5">${p.time}</p>
+                            ${p.impact ? `<p class="text-xs text-ink-400 mt-0.5">${p.impact}</p>` : ''}
+                            <div class="flex gap-3 mt-1 text-xs text-ink-400">
+                                ${Object.entries(p.links).map(([k,v]) => `<a href="${v}" class="hover:text-vermilion" target="_blank" rel="noopener noreferrer" aria-label="${k} link for ${p.title}">${k.toUpperCase()}</a>`).join('')}
+                                <button data-cite="b${i}" class="hover:text-vermilion" aria-expanded="false">${t(d.ui.cite)}</button>
+                            </div>
+                            <div id="b${i}" class="bibtex-drawer bibtex-wrapper">
+                                <pre class="mt-2 p-3 pr-16 bg-ink-100 dark:bg-ink-800 rounded text-[10px] text-ink-500 overflow-x-auto leading-relaxed">${formatBibtex(p.bibtex)}</pre>
+                                <button data-copy-idx="${i}" class="bibtex-copy" aria-label="Copy BibTeX"><i class="fas fa-copy"></i> Copy</button>
+                            </div>
+                        </div>
+                    </article>
+                </li>`
+            ).join('');
+
+            // Projects
+            const projTitleElement = document.querySelector('#proj-heading');
+            if (projTitleElement) projTitleElement.textContent = t(d.ui.sections.projects);
+
+            $('#proj-list').innerHTML = d.projects.map(p =>
+                `<article class="group flex items-start gap-3">
+                    <i class="${p.icon} text-vermilion mt-1" aria-hidden="true"></i>
+                    <div>
+                        <h3 class="font-medium text-ink-900 dark:text-ink-50 group-hover:text-vermilion">${t(p.name)}</h3>
+                        <p class="text-xs text-ink-400 mt-0.5">${p.time}</p>
+                        <div class="flex flex-wrap gap-1 mt-1">
+                            ${(t(p.highlights) || []).map(h => `<span class="text-[0.6rem] px-1.5 py-0.5 bg-ink-100 dark:bg-ink-800 text-vermilion rounded">${h}</span>`).join('')}
+                        </div>
+                        <p class="text-xs text-ink-500 mt-1">${t(p.desc)}</p>
+                    </div>
+                </article>`
+            ).join('');
+
+            // Footer
+            const footerElement = document.querySelector('#footer-update');
+            if (footerElement) footerElement.textContent = t(d.ui.footer);
+
+            // Update mobile navigation text
+            $$('[data-mobile-nav]').forEach((el, i) => {
+                if (d.ui.nav[lang][i]) el.textContent = d.ui.nav[lang][i];
+            });
+            const mobileNavBtn = $('#mobile-nav-btn');
+            if (mobileNavBtn) mobileNavBtn.textContent = t(d.profile.logo);
+            const mobileThemeText = $('#mobile-theme-text');
+            if (mobileThemeText) mobileThemeText.textContent = document.documentElement.classList.contains('dark') ? 'Light' : 'Dark';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPage();
+        });
+
+        const html = document.documentElement, sun = document.getElementById('sun-icon'), moon = document.getElementById('moon-icon');
+        const getTheme = () => localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
+        const setTheme = (t) => { html.classList.toggle('dark', t === 'dark'); sun.classList.toggle('hidden', t === 'dark'); moon.classList.toggle('hidden', t !== 'dark'); };
+        setTheme(getTheme());
+        matchMedia('(prefers-color-scheme:dark)').onchange = e => { if (!localStorage.getItem('theme')) setTheme(e.matches ? 'dark' : 'light'); };
+        document.getElementById('theme-toggle').onclick = () => { const t = html.classList.contains('dark') ? 'light' : 'dark'; localStorage.setItem('theme', t); setTheme(t); };
+
+        const secs = document.querySelectorAll('section[id]'), navs = document.querySelectorAll('.nav-link');
+        const wheel = document.getElementById('helm-wheel');
+        // Rotation angles: 3 sections evenly distributed around the wheel
+        const sectionAngles = { about: 0, publications: 120, projects: 240 };
+        let currentSection = 'about';
+
+        const hl = () => {
+            const p = scrollY + window.innerHeight / 3;
+            secs.forEach(s => {
+                if (p >= s.offsetTop && p < s.offsetTop + s.offsetHeight) {
+                    const id = s.id;
+                    navs.forEach(n => n.classList.toggle('active', n.hash === '#' + id));
+                    if (currentSection !== id) {
+                        currentSection = id;
+                        wheel.style.transform = `rotate(${sectionAngles[id]}deg)`;
+                    }
+                }
+            });
+        };
+        addEventListener('scroll', hl); hl();
+
+        // Toast notification
+        function showToast() {
+            const toast = $('#copy-toast');
+            toast.classList.remove('opacity-0');
+            toast.classList.add('opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0');
+            }, 2000);
+        }
+
+        // Mobile menu helper
+        function closeMobileMenu() {
+            const btn = $('#mobile-nav-btn'), menu = $('#mobile-menu');
+            if (btn) btn.classList.remove('active');
+            if (menu) menu.classList.remove('open');
+        }
+
+        // Global event delegation
+        document.addEventListener('click', e => {
+            // BibTeX cite toggle
+            const cite = e.target.closest('[data-cite]');
+            if (cite) {
+                const drawer = document.getElementById(cite.dataset.cite);
+                drawer.classList.toggle('open');
+                cite.setAttribute('aria-expanded', drawer.classList.contains('open'));
+                return;
+            }
+            // BibTeX copy
+            const copy = e.target.closest('[data-copy-idx]');
+            if (copy) {
+                const text = DATA.publications[copy.dataset.copyIdx].bibtex;
+                navigator.clipboard.writeText(text).then(() => {
+                    copy.classList.add('copied');
+                    copy.innerHTML = '<i class="fas fa-check"></i> Copied';
+                    showToast();
+                    setTimeout(() => {
+                        copy.classList.remove('copied');
+                        copy.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                    }, 2000);
+                });
+                return;
+            }
+            // Mobile navigation
+            if (e.target.closest('#mobile-nav-btn')) {
+                $('#mobile-nav-btn').classList.toggle('active');
+                $('#mobile-menu').classList.toggle('open');
+                return;
+            }
+            if (e.target.closest('.mobile-nav-link')) { closeMobileMenu(); return; }
+            if (e.target.closest('#mobile-theme-toggle')) {
+                const t = html.classList.contains('dark') ? 'light' : 'dark';
+                localStorage.setItem('theme', t);
+                setTheme(t);
+                $('#mobile-theme-text').textContent = t === 'dark' ? 'Light' : 'Dark';
+                closeMobileMenu();
+                return;
+            }
+            // Click outside mobile menu
+            if (!e.target.closest('.mobile-nav-fab')) closeMobileMenu();
+        });
+
+    </script>
+
+</body>
+</html>
