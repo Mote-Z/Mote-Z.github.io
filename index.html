@@ -4,19 +4,24 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Xiang Zhang — cybersecurity researcher and network security engineer.">
-  <title>Xiang Zhang</title>
+  <title>Xiang Zhang — Security Research</title>
   <style>
     :root {
-      --black: #050505;
-      --panel: #0b0b0b;
-      --raised: #111;
-      --white: #f1f1ef;
-      --gray: #a1a19d;
-      --dim: #62625f;
-      --line: #2a2a28;
+      color-scheme: dark;
+      --background: #050505;
+      --surface: #0b0b0b;
+      --surface-raised: #111;
+      --text: #f2f2f2;
+      --muted: #9b9b9b;
+      --dim: #696969;
+      --line: #2a2a2a;
+      --prompt: #d8d8d8;
+      --max-width: 1040px;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     html,
     body {
@@ -24,588 +29,590 @@
       height: 100%;
       margin: 0;
       overflow: hidden;
-      background: var(--black);
+      background: var(--background);
     }
 
     body {
-      color: var(--white);
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      min-height: 100dvh;
+      color: var(--text);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 14px;
+      line-height: 1.55;
       -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
     }
 
     button,
-    input { font: inherit; }
+    input {
+      font: inherit;
+    }
 
-    a { color: inherit; }
+    a {
+      color: var(--text);
+      text-decoration-color: var(--dim);
+      text-underline-offset: 3px;
+    }
 
-    button:focus-visible,
-    input:focus-visible,
+    a:hover,
     a:focus-visible {
-      outline: 1px solid var(--white);
-      outline-offset: 3px;
+      text-decoration-color: var(--text);
     }
 
-    .screen {
-      width: 100vw;
-      height: 100dvh;
-      padding: clamp(12px, 2.5vw, 32px);
+    .page {
       display: grid;
+      min-height: 100dvh;
       place-items: center;
-      background: var(--black);
-    }
-
-    .window {
-      width: min(1180px, 100%);
-      height: min(760px, 100%);
-      display: grid;
-      grid-template-rows: 42px 1fr;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      background: var(--panel);
-    }
-
-    .titlebar {
-      padding: 0 16px;
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: center;
-      border-bottom: 1px solid var(--line);
-      background: var(--raised);
-    }
-
-    .titlebar p {
-      margin: 0;
-      color: var(--gray);
-      font-size: 11px;
-    }
-
-    .status { justify-self: end; }
-    .status::before { content: "[ "; color: var(--dim); }
-    .status::after { content: " ]"; color: var(--dim); }
-
-    .window-mark { display: flex; gap: 7px; }
-
-    .window-mark i {
-      width: 8px;
-      height: 8px;
-      border: 1px solid var(--dim);
-      border-radius: 50%;
+      padding: clamp(12px, 3vw, 36px);
     }
 
     .terminal {
-      min-height: 0;
-      padding: clamp(18px, 3vw, 38px);
       display: grid;
-      grid-template-rows: auto minmax(0, 1fr) auto;
-      gap: 22px;
+      width: min(100%, var(--max-width));
+      height: min(760px, calc(100dvh - clamp(24px, 6vw, 72px)));
+      grid-template-rows: 42px minmax(0, 1fr) auto;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface);
+      box-shadow: 0 20px 70px rgba(0, 0, 0, 0.45);
     }
 
-    .last-command,
-    form label {
-      color: var(--gray);
-      font-size: 12px;
-    }
-
-    .last-command span,
-    form label span { color: var(--white); }
-
-    .last-command strong,
-    form label strong {
-      color: var(--dim);
-      font-weight: 400;
-    }
-
-    .output-frame {
-      min-height: 0;
+    .terminal-bar {
       display: grid;
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
+      min-width: 0;
+      padding: 0 14px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-raised);
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 7px;
+    }
+
+    .terminal-dots span {
+      width: 8px;
+      height: 8px;
+      border: 1px solid #606060;
+      border-radius: 50%;
+    }
+
+    .terminal-title {
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 12px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .terminal-output {
+      min-height: 0;
       overflow: auto;
+      padding: clamp(18px, 3vw, 32px);
+      scrollbar-color: #444 transparent;
       scrollbar-width: thin;
-      scrollbar-color: var(--line) transparent;
     }
 
-    .output {
-      width: 100%;
-      max-height: 100%;
+    .terminal-output::-webkit-scrollbar {
+      width: 6px;
     }
 
-    .output p,
-    .output h1,
-    .output h2 { margin-top: 0; }
-
-    .welcome .muted:first-child { margin-bottom: 34px; }
-
-    h1 {
-      margin-bottom: 10px;
-      font-size: clamp(42px, 8vw, 92px);
-      font-weight: 500;
-      letter-spacing: -0.075em;
-      line-height: 0.92;
+    .terminal-output::-webkit-scrollbar-thumb {
+      border-radius: 6px;
+      background: #444;
     }
 
-    .role,
-    .muted,
-    .copy p,
-    .rows p { color: var(--gray); }
-
-    .role {
-      margin-bottom: clamp(34px, 6vh, 66px);
-      font-size: 13px;
+    .command-line,
+    .input-line {
+      display: flex;
+      align-items: baseline;
+      gap: 9px;
     }
 
-    .welcome-copy {
-      max-width: 700px;
-      font-size: 14px;
-      line-height: 1.7;
-    }
-
-    .welcome-copy p { margin-bottom: 10px; }
-    .welcome-copy strong { color: var(--white); font-weight: 500; }
-
-    .output-title,
-    .label {
-      margin-bottom: 26px;
-      color: var(--dim);
-      font-size: 11px;
-    }
-
-    .command-list {
-      max-width: 680px;
-      border-top: 1px solid var(--line);
-    }
-
-    .command-list p {
-      margin: 0;
-      padding: 10px 0;
-      display: grid;
-      grid-template-columns: 190px 1fr;
-      border-bottom: 1px solid var(--line);
-      font-size: 12px;
-    }
-
-    .command-list span { color: var(--gray); }
-
-    .hint {
-      margin: 22px 0 0;
-      color: var(--dim);
-      font-size: 10px;
-    }
-
-    .two-column {
-      display: grid;
-      grid-template-columns: minmax(220px, 0.7fr) 1.3fr;
-      gap: clamp(30px, 7vw, 90px);
-    }
-
-    .two-column h2,
-    .publication h2 {
-      margin-bottom: 0;
-      font-size: clamp(25px, 4vw, 42px);
-      font-weight: 500;
-      letter-spacing: -0.045em;
-      line-height: 1.1;
-    }
-
-    .copy { max-width: 650px; }
-
-    .copy p {
-      margin-bottom: 14px;
-      font-size: 13px;
-      line-height: 1.7;
-    }
-
-    .rows { border-top: 1px solid var(--line); }
-
-    .rows article {
-      padding: 16px 0;
-      display: grid;
-      align-items: start;
-      gap: 18px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .research-rows article { grid-template-columns: 34px 250px 1fr; }
-    .experience-rows article { grid-template-columns: 100px 230px 1fr; }
-
-    .rows span {
-      color: var(--dim);
-      font-size: 10px;
-    }
-
-    .rows h2 {
-      margin-bottom: 0;
-      font-size: 12px;
+    .prompt {
+      flex: 0 0 auto;
+      color: var(--prompt);
       font-weight: 600;
     }
 
-    .rows p {
-      margin-bottom: 0;
-      font-size: 12px;
-      line-height: 1.55;
+    .command {
+      color: var(--text);
     }
 
-    .publication .copy h2 { margin-bottom: 22px; }
-    .publication .copy strong { color: var(--white); }
-
-    .publication a,
-    .contact-links a {
-      color: var(--white);
-      font-size: 12px;
-      text-underline-offset: 4px;
+    .result {
+      margin: 10px 0 28px 0;
     }
 
-    .contact-links {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 16px;
+    .identity {
+      margin-bottom: 24px;
     }
 
-    .compact { align-self: start; }
-    .compact p { font-size: 12px; }
-
-    .controls {
-      padding-top: 18px;
-      border-top: 1px solid var(--line);
+    .name {
+      margin: 0 0 2px;
+      font-family: inherit;
+      font-size: clamp(25px, 4vw, 43px);
+      font-weight: 600;
+      letter-spacing: -0.055em;
+      line-height: 1.15;
     }
 
-    .quick-commands {
-      margin-bottom: 15px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+    .role {
+      margin: 0 0 15px;
+      color: var(--muted);
+      font-size: 13px;
     }
 
-    .quick-commands button,
-    form button {
-      padding: 5px 9px;
-      border: 1px solid var(--line);
-      background: transparent;
-      color: var(--gray);
-      cursor: pointer;
-      font-size: 10px;
+    .summary {
+      max-width: 760px;
+      margin: 0;
+      color: #d0d0d0;
     }
 
-    .quick-commands button:hover,
-    form button:hover {
-      border-color: var(--gray);
-      color: var(--white);
-    }
-
-    form {
+    .file-grid {
       display: grid;
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
-      gap: 8px;
+      grid-template-columns: repeat(5, minmax(max-content, 1fr));
+      gap: 6px 18px;
+      margin: 10px 0 20px;
+      color: #d8d8d8;
     }
 
-    form input {
+    .available {
+      color: var(--dim);
+      font-size: 12px;
+    }
+
+    .content-block {
+      max-width: 860px;
+    }
+
+    .content-block p {
+      margin: 0 0 12px;
+    }
+
+    .content-block p:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-label {
+      color: var(--muted);
+    }
+
+    .entry {
+      display: grid;
+      grid-template-columns: minmax(110px, 145px) minmax(0, 1fr);
+      gap: 8px 18px;
+      margin-bottom: 14px;
+    }
+
+    .entry:last-child {
+      margin-bottom: 0;
+    }
+
+    .entry-key {
+      color: var(--muted);
+    }
+
+    .entry-value strong {
+      display: block;
+      margin-bottom: 2px;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .entry-value span,
+    .publication-note {
+      color: #b7b7b7;
+    }
+
+    .terminal-input {
+      padding: 15px clamp(18px, 3vw, 32px);
+      border-top: 1px solid var(--line);
+      background: var(--surface-raised);
+    }
+
+    #command-input {
+      width: 100%;
       min-width: 0;
       border: 0;
       outline: 0;
       background: transparent;
-      color: var(--white);
-      caret-color: var(--white);
-      font-size: 12px;
+      color: var(--text);
+      caret-color: var(--text);
     }
 
-    form button { padding-inline: 14px; }
+    #command-input::placeholder {
+      color: #555;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
 
     @media (max-width: 720px) {
-      .screen { padding: 0; }
+      body {
+        font-size: 12px;
+      }
 
-      .window {
+      .page {
+        padding: 0;
+      }
+
+      .terminal {
         width: 100%;
-        height: 100%;
+        height: 100dvh;
         border: 0;
-        grid-template-rows: 38px 1fr;
+        border-radius: 0;
       }
 
-      .titlebar { padding: 0 12px; grid-template-columns: 1fr auto; }
-      .titlebar p { font-size: 9px; }
-      .status { display: none; }
-
-      .terminal { padding: 16px; gap: 14px; }
-      .last-command { font-size: 10px; }
-      h1 { font-size: clamp(42px, 17vw, 66px); }
-      .role { margin-bottom: 30px; line-height: 1.5; }
-
-      .two-column { grid-template-columns: 1fr; gap: 22px; }
-      .two-column h2 { font-size: 27px; }
-
-      .research-rows article,
-      .experience-rows article {
-        grid-template-columns: 28px 1fr;
-        gap: 9px;
+      .file-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .experience-rows article { grid-template-columns: 80px 1fr; }
-      .rows p { grid-column: 2; }
-      .rows article { padding: 11px 0; }
-      .rows p, .copy p { font-size: 11px; line-height: 1.5; }
-      .output-title, .label { margin-bottom: 16px; }
-
-      .quick-commands { gap: 5px; }
-
-      .quick-commands button {
-        padding: 4px 6px;
-        font-size: 9px;
+      .entry {
+        grid-template-columns: 1fr;
+        gap: 1px;
       }
-
-      form button { display: none; }
-      form { grid-template-columns: auto 1fr; }
-      form label, form input { font-size: 10px; }
     }
 
     @media (max-height: 620px) {
-      .terminal { gap: 12px; padding-top: 16px; padding-bottom: 16px; }
-      .welcome .muted:first-child { margin-bottom: 18px; }
-      .role { margin-bottom: 22px; }
-      .controls { padding-top: 10px; }
-      .quick-commands { margin-bottom: 9px; }
-      .rows article { padding: 9px 0; }
+      .terminal {
+        height: calc(100dvh - 16px);
+      }
+
+      .terminal-output {
+        padding-top: 16px;
+        padding-bottom: 16px;
+      }
+
+      .result {
+        margin-bottom: 18px;
+      }
+
+      .identity {
+        margin-bottom: 16px;
+      }
     }
   </style>
 </head>
 <body>
-  <main class="screen" id="screen">
-    <section class="window" aria-label="Interactive academic terminal">
-      <header class="titlebar">
-        <div class="window-mark" aria-hidden="true"><i></i><i></i><i></i></div>
-        <p>xiang.zhang — bash — 80×24</p>
-        <p class="status">online</p>
+  <main class="page">
+    <section class="terminal" aria-label="Interactive portfolio terminal">
+      <header class="terminal-bar">
+        <div class="terminal-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="terminal-title">xiang@security: ~</div>
+        <div></div>
       </header>
 
-      <div class="terminal">
-        <div class="last-command" aria-live="polite">
-          <span>xiang@security</span>:<strong>~</strong>$ <b id="shown-command">whoami</b>
-        </div>
+      <div id="terminal-output" class="terminal-output" aria-live="polite"></div>
 
-        <div class="output-frame" aria-live="polite">
-          <div id="output" class="output"></div>
+      <form id="terminal-form" class="terminal-input" autocomplete="off">
+        <label class="sr-only" for="command-input">Terminal command</label>
+        <div class="input-line">
+          <span class="prompt" aria-hidden="true">xiang@security:~$</span>
+          <input
+            id="command-input"
+            name="command"
+            type="text"
+            spellcheck="false"
+            autocapitalize="off"
+            autocomplete="off"
+            placeholder="type a command"
+            autofocus
+          >
         </div>
-
-        <div class="controls">
-          <div class="quick-commands" aria-label="Quick commands">
-            <button type="button" data-command="cat about.txt">cat about.txt</button>
-            <button type="button" data-command="cat research.txt">cat research.txt</button>
-            <button type="button" data-command="cat publication.txt">cat publication.txt</button>
-            <button type="button" data-command="cat experience.txt">cat experience.txt</button>
-            <button type="button" data-command="cat contacts.txt">cat contacts.txt</button>
-          </div>
-
-          <form id="command-form">
-            <label for="terminal-input">
-              <span>xiang@security</span>:<strong>~</strong>$
-            </label>
-            <input
-              id="terminal-input"
-              autocomplete="off"
-              spellcheck="false"
-              aria-label="Terminal command"
-            >
-            <button type="submit">run</button>
-          </form>
-        </div>
-      </div>
+      </form>
     </section>
   </main>
 
-  <script>
-    const commands = [
-      "help",
-      "cat about.txt",
-      "cat research.txt",
-      "cat publication.txt",
-      "cat experience.txt",
-      "cat contacts.txt",
-      "clear"
-    ];
+  <template id="home-template">
+    <div class="command-line">
+      <span class="prompt">xiang@security:~$</span>
+      <span class="command">whoami</span>
+    </div>
+    <div class="result">
+      <div class="identity">
+        <h1 class="name">Xiang Zhang</h1>
+        <p class="role">Cybersecurity researcher / Network security engineer</p>
+        <p class="summary">I work on attack-surface analysis, network and systems security, and AI-assisted security analysis.</p>
+      </div>
+      <div class="command-line">
+        <span class="prompt">xiang@security:~$</span>
+        <span class="command">ls</span>
+      </div>
+      <div class="file-grid" aria-label="Available files">
+        <span>about.txt</span>
+        <span>research.txt</span>
+        <span>publication.txt</span>
+        <span>experience.txt</span>
+        <span>contacts.txt</span>
+      </div>
+      <div class="available">available commands: whoami&nbsp;&nbsp;ls&nbsp;&nbsp;cat</div>
+    </div>
+  </template>
 
-    const views = {
-      welcome: `
-        <div class="welcome">
-          <p class="muted">Last login: today on academic-portfolio</p>
-          <h1>Xiang Zhang</h1>
-          <p class="role">Cybersecurity researcher / Network security engineer</p>
-          <div class="welcome-copy">
-            <p>I work on attack-surface analysis, network and systems security, and AI-assisted security analysis.</p>
-            <p class="muted">Type <strong>help</strong> or read a file from the command bar.</p>
-          </div>
-        </div>`,
+  <template id="ls-template">
+    <div class="file-grid" aria-label="Available files">
+      <span>about.txt</span>
+      <span>research.txt</span>
+      <span>publication.txt</span>
+      <span>experience.txt</span>
+      <span>contacts.txt</span>
+    </div>
+  </template>
 
-      help: `
-        <p class="output-title">Available commands</p>
-        <div class="command-list">
-          <p><strong>cat about.txt</strong><span>short profile and background</span></p>
-          <p><strong>cat research.txt</strong><span>current research interests</span></p>
-          <p><strong>cat publication.txt</strong><span>selected publication</span></p>
-          <p><strong>cat experience.txt</strong><span>selected professional work</span></p>
-          <p><strong>cat contacts.txt</strong><span>academic and professional links</span></p>
-          <p><strong>clear</strong><span>clear the current output</span></p>
+  <template id="about-template">
+    <div class="content-block">
+      <p>My background spans knowledge-graph-based asset discovery, enterprise network security, CTF competitions, and vulnerability analysis.</p>
+      <div class="entry">
+        <span class="entry-key">education</span>
+        <div class="entry-value">
+          <strong>M.Sc. Cybersecurity</strong>
+          <span>University of Chinese Academy of Sciences</span>
         </div>
-        <p class="hint">Tip: use ↑ to recall the last command and Tab to complete.</p>`,
+      </div>
+      <div class="entry">
+        <span class="entry-key">education</span>
+        <div class="entry-value">
+          <strong>B.Sc. Cybersecurity</strong>
+          <span>Central South University</span>
+        </div>
+      </div>
+      <div class="entry">
+        <span class="entry-key">current role</span>
+        <div class="entry-value">
+          <strong>Network Security Engineer</strong>
+          <span>E Fund Management</span>
+        </div>
+      </div>
+      <div class="entry">
+        <span class="entry-key">community</span>
+        <div class="entry-value">
+          <strong>Former member</strong>
+          <span>CTF team Never Stop Exploiting</span>
+        </div>
+      </div>
+    </div>
+  </template>
 
-      about: `
-        <div class="two-column">
-          <div>
-            <p class="label">about.txt</p>
-            <h2>Research informed by practice.</h2>
-          </div>
-          <div class="copy">
-            <p>My background includes knowledge-graph-based asset discovery, enterprise network security, CTF competitions, and vulnerability analysis.</p>
-            <p>M.Sc. in Cybersecurity, University of Chinese Academy of Sciences. B.Sc. in Cybersecurity, Central South University.</p>
-            <p>Network Security Engineer at E Fund Management and former member of the CTF team Never Stop Exploiting.</p>
-          </div>
-        </div>`,
+  <template id="research-template">
+    <div class="content-block">
+      <div class="entry">
+        <span class="entry-key">Attack Surface Analysis</span>
+        <div class="entry-value"><span>Cross-layer analysis of exposure, reachability, identity, vulnerabilities, and security controls.</span></div>
+      </div>
+      <div class="entry">
+        <span class="entry-key">AI for Security</span>
+        <div class="entry-value"><span>Using AI to interpret heterogeneous security data while grounding conclusions in system evidence.</span></div>
+      </div>
+      <div class="entry">
+        <span class="entry-key">Attack Path Reasoning</span>
+        <div class="entry-value"><span>Studying how infrastructure state and application behavior combine to form practical attack paths.</span></div>
+      </div>
+    </div>
+  </template>
 
-      research: `
-        <p class="label">research.txt</p>
-        <div class="rows research-rows">
-          <article>
-            <span>01</span>
-            <h2>attack-surface-analysis</h2>
-            <p>Cross-layer analysis of exposure, reachability, identity, vulnerabilities, and security controls.</p>
-          </article>
-          <article>
-            <span>02</span>
-            <h2>ai-for-security</h2>
-            <p>Using AI to interpret heterogeneous security data while grounding conclusions in system evidence.</p>
-          </article>
-          <article>
-            <span>03</span>
-            <h2>attack-path-reasoning</h2>
-            <p>Studying how infrastructure state and application behavior combine to form practical attack paths.</p>
-          </article>
-        </div>`,
+  <template id="publication-template">
+    <div class="content-block">
+      <p class="section-label">ICA3PP 2021 · Springer</p>
+      <p><strong>Auto-Recon: An Automated Network Reconnaissance System Based on Knowledge Graph</strong></p>
+      <p class="publication-note">Xiang Zhang, Qingli Guo, Yuan Liu, Xiaorui Gong</p>
+      <p class="publication-note">A knowledge-graph-based approach to automated asset discovery and network reconnaissance.</p>
+      <p><a href="https://doi.org/10.1007/978-3-030-95391-1_7" target="_blank" rel="noreferrer">doi:10.1007/978-3-030-95391-1_7</a></p>
+    </div>
+  </template>
 
-      publication: `
-        <div class="two-column publication">
-          <div>
-            <p class="label">publication.txt</p>
-            <p class="muted">ICA3PP 2021 · Springer</p>
-          </div>
-          <div class="copy">
-            <h2>Auto-Recon: An Automated Network Reconnaissance System Based on Knowledge Graph</h2>
-            <p><strong>Xiang Zhang</strong>, Qingli Guo, Yuan Liu, and Xiaorui Gong</p>
-            <p>A knowledge-graph-based approach to automated asset discovery and network reconnaissance.</p>
-            <a href="https://doi.org/10.1007/978-3-030-95391-1_7" target="_blank" rel="noreferrer">open paper ↗</a>
-          </div>
-        </div>`,
+  <template id="experience-template">
+    <div class="content-block">
+      <div class="entry">
+        <span class="entry-key">2024—now</span>
+        <div class="entry-value">
+          <strong>Attack Surface Governance</strong>
+          <span>Multi-layer security modeling for exposure validation and remediation planning.</span>
+        </div>
+      </div>
+      <div class="entry">
+        <span class="entry-key">2023—now</span>
+        <div class="entry-value">
+          <strong>Network security automation</strong>
+          <span>Reachability analysis, topology modeling, and policy lifecycle automation.</span>
+        </div>
+      </div>
+      <div class="entry">
+        <span class="entry-key">2025—now</span>
+        <div class="entry-value">
+          <strong>ZTA/SASE</strong>
+          <span>Identity-aware access and Single Packet Authorization.</span>
+        </div>
+      </div>
+      <div class="entry">
+        <span class="entry-key">2022—23</span>
+        <div class="entry-value">
+          <strong>Active Directory Security</strong>
+          <span>Attack path modeling and defensive hardening.</span>
+        </div>
+      </div>
+    </div>
+  </template>
 
-      experience: `
-        <p class="label">experience.txt</p>
-        <div class="rows experience-rows">
-          <article><span>2024—now</span><h2>attack-surface governance</h2><p>Multi-layer security modeling for exposure validation and remediation planning.</p></article>
-          <article><span>2023—now</span><h2>network security automation</h2><p>Reachability analysis, topology modeling, and policy lifecycle automation.</p></article>
-          <article><span>2025—now</span><h2>zero-trust access</h2><p>Identity-aware access and Single Packet Authorization.</p></article>
-          <article><span>2022—23</span><h2>active-directory security</h2><p>Attack-path modeling and defensive hardening.</p></article>
-        </div>`,
+  <template id="contacts-template">
+    <div class="content-block">
+      <div class="entry">
+        <span class="entry-key">Google Scholar</span>
+        <div class="entry-value"><a href="https://scholar.google.com/citations?user=PVjI030AAAAJ&amp;hl=en" target="_blank" rel="noreferrer">scholar.google.com/citations?user=PVjI030AAAAJ</a></div>
+      </div>
+      <div class="entry">
+        <span class="entry-key">GitHub</span>
+        <div class="entry-value"><a href="https://github.com/Mote-Z" target="_blank" rel="noreferrer">github.com/Mote-Z</a></div>
+      </div>
+      <div class="entry">
+        <span class="entry-key">LinkedIn</span>
+        <div class="entry-value"><a href="https://www.linkedin.com/in/xiang-zhang-moteorz/" target="_blank" rel="noreferrer">linkedin.com/in/xiang-zhang-moteorz</a></div>
+      </div>
+      <div class="entry">
+        <span class="entry-key">Email</span>
+        <div class="entry-value"><a href="mailto:mote.orzzz@gmail.com">mote.orzzz@gmail.com</a></div>
+      </div>
+    </div>
+  </template>
 
-      contact: `
-        <div class="two-column">
-          <div>
-            <p class="label">contacts.txt</p>
-            <h2>Find me online.</h2>
-          </div>
-          <div class="contact-links">
-            <a href="https://scholar.google.com/citations?user=PVjI030AAAAJ&amp;hl=en" target="_blank" rel="noreferrer">google-scholar ↗</a>
-            <a href="https://github.com/Mote-Z" target="_blank" rel="noreferrer">github ↗</a>
-            <a href="https://www.linkedin.com/in/xiang-zhang-moteorz/" target="_blank" rel="noreferrer">linkedin ↗</a>
-            <a href="mailto:mote.orzzz@gmail.com">mote.orzzz@gmail.com</a>
-          </div>
-        </div>`
-    };
+  <script>
+    (() => {
+      "use strict";
 
-    const routes = {
-      "whoami": "about",
-      "cat about": "about",
-      "cat about.txt": "about",
-      "cat research": "research",
-      "cat research.txt": "research",
-      "cat publication": "publication",
-      "cat publication.txt": "publication",
-      "cat experience": "experience",
-      "cat experience.txt": "experience",
-      "cat contacts": "contact",
-      "cat contacts.txt": "contact",
-      "help": "help",
-      "man": "help",
-      "ls": "help",
-      "clear": "clear"
-    };
+      const output = document.getElementById("terminal-output");
+      const form = document.getElementById("terminal-form");
+      const input = document.getElementById("command-input");
 
-    const output = document.getElementById("output");
-    const input = document.getElementById("terminal-input");
-    const shownCommand = document.getElementById("shown-command");
-    const form = document.getElementById("command-form");
-    let lastCommand = "";
+      const files = {
+        "about.txt": "about-template",
+        "research.txt": "research-template",
+        "publication.txt": "publication-template",
+        "experience.txt": "experience-template",
+        "contacts.txt": "contacts-template"
+      };
 
-    function normalize(value) {
-      return value.trim().toLowerCase().replace(/\s+/g, " ");
-    }
+      const completionCommands = [
+        "whoami",
+        "ls",
+        "cat about.txt",
+        "cat research.txt",
+        "cat publication.txt",
+        "cat experience.txt",
+        "cat contacts.txt"
+      ];
 
-    function run(raw) {
-      const command = normalize(raw);
-      if (!command) return;
+      let lastCommand = "";
 
-      shownCommand.textContent = command;
-      lastCommand = command;
-      input.value = "";
-
-      const route = routes[command];
-      if (route === "clear") {
-        output.innerHTML = "";
-      } else if (route && views[route]) {
-        output.innerHTML = views[route];
-      } else {
-        output.innerHTML = `
-          <div class="compact">
-            <p>bash: ${escapeHtml(command)}: command not found</p>
-            <p class="muted">Type 'help' to list available commands.</p>
-          </div>`;
+      function cloneTemplate(id) {
+        return document.getElementById(id).content.cloneNode(true);
       }
-    }
 
-    function escapeHtml(value) {
-      return value.replace(/[&<>"']/g, character => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-      })[character]);
-    }
+      function showHome() {
+        output.replaceChildren(cloneTemplate("home-template"));
+        output.scrollTop = 0;
+      }
 
-    form.addEventListener("submit", event => {
-      event.preventDefault();
-      run(input.value);
-    });
+      function appendCommand(command) {
+        const line = document.createElement("div");
+        line.className = "command-line";
 
-    input.addEventListener("keydown", event => {
-      if (event.key === "ArrowUp") {
+        const prompt = document.createElement("span");
+        prompt.className = "prompt";
+        prompt.textContent = "xiang@security:~$";
+
+        const value = document.createElement("span");
+        value.className = "command";
+        value.textContent = command;
+
+        line.append(prompt, value);
+        output.append(line);
+      }
+
+      function appendResult(templateId) {
+        const result = document.createElement("div");
+        result.className = "result";
+        result.append(cloneTemplate(templateId));
+        output.append(result);
+        output.scrollTop = output.scrollHeight;
+      }
+
+      function runCommand(rawCommand) {
+        const command = rawCommand.trim().replace(/\s+/g, " ");
+        if (!command) return;
+
+        lastCommand = command;
+        const parts = command.split(" ");
+        const action = parts[0].toLowerCase();
+
+        if (action === "whoami" && parts.length === 1) {
+          showHome();
+          return;
+        }
+
+        if (action === "ls" && parts.length === 1) {
+          appendCommand(command);
+          appendResult("ls-template");
+          return;
+        }
+
+        if (action === "cat" && parts.length === 2) {
+          const requested = parts[1].toLowerCase();
+          const filename = requested.endsWith(".txt") ? requested : `${requested}.txt`;
+          const templateId = files[filename];
+
+          if (templateId) {
+            appendCommand(command);
+            appendResult(templateId);
+            return;
+          }
+        }
+
+        showHome();
+      }
+
+      form.addEventListener("submit", (event) => {
         event.preventDefault();
-        input.value = lastCommand;
-      }
+        runCommand(input.value);
+        input.value = "";
+      });
 
-      if (event.key === "Tab") {
-        event.preventDefault();
-        const value = normalize(input.value);
-        const match = commands.find(command => command.startsWith(value));
-        if (match) input.value = match;
-      }
-    });
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowUp") {
+          event.preventDefault();
+          input.value = lastCommand;
+          input.setSelectionRange(input.value.length, input.value.length);
+          return;
+        }
 
-    document.querySelectorAll("[data-command]").forEach(button => {
-      button.addEventListener("click", () => run(button.dataset.command));
-    });
+        if (event.key === "Tab") {
+          event.preventDefault();
+          const value = input.value.trim().toLowerCase();
+          if (!value) return;
 
-    document.getElementById("screen").addEventListener("click", event => {
-      if (!event.target.closest("a, button")) input.focus();
-    });
+          const matches = completionCommands.filter((command) => command.startsWith(value));
+          if (matches.length === 1) {
+            input.value = matches[0];
+            input.setSelectionRange(input.value.length, input.value.length);
+          }
+        }
+      });
 
-    output.innerHTML = views.welcome;
-    input.focus();
+      document.querySelector(".terminal").addEventListener("click", (event) => {
+        if (!(event.target instanceof HTMLAnchorElement)) input.focus();
+      });
+
+      showHome();
+    })();
   </script>
 </body>
 </html>
